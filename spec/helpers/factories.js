@@ -9,24 +9,24 @@ factory.define('connection', Connection, {
 
   connect: function() {
     return function(callback) {
-      callback();
+      if (this.state === 'connected') {
+        callback();
+      } else {
+        callback(this.getConnectionError());
+      }
     };
   },
 
   end: function() {
-    return function() {};
+    return function() {
+      this.state = 'disconnected';
+    };
   },
 
   getConnectionError: function() {
     return function() {
       return new Error('Unable to connect');
     };
-  },
-
-  isConnected: function() {
-    return function() {
-      return this.state === 'connected';
-    }.bind(this);
   }
 
 });
@@ -34,21 +34,25 @@ factory.define('connection', Connection, {
 factory.define('db', DB, {
 
   state: 'connected',
+  _connection: null,
 
   connect: function() {
-    var self = this;
     // we return function since factory-girl computes the object property in order
     // to get value, but we need method instead of value
     return function() {
+      var self = this;
 
       return new Promise(function(resolve, reject) {
-        var connection = factory.buildSync('connection', {state: self.state});
+        self._connection = factory.buildSync('connection', {state: self.state});
 
-        if (connection.isConnected()) {
-          resolve();
-        } else {
-          reject(connection.getConnectionError());
-        }
+        self._connection.connect(function(err) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve();
+          }
+        });
+
       });
 
     };
@@ -56,8 +60,20 @@ factory.define('db', DB, {
 
   getConnection: function() {
     return function() {
-      return factory.buildSync('connection');
+      return this._connection;
     };
   },
+
+  isConnected: function() {
+    return function() {
+      return this._connection.state === 'connected';
+    };
+  },
+
+  closeConnection: function() {
+    return function() {
+      this._connection.end();
+    };
+  }
 });
 

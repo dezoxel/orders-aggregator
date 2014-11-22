@@ -37,11 +37,34 @@ describe('DB', function () {
       expect(db.connect()).to.have.property('then');
     });
 
-    it('successfully connects if no error occurred');
-    it('fails to connect if any error occured');
-    it('returns error object if connection is failed');
-    it('keeps connection');
-    it('requires to close the connection by user');
+    it('successfully connects if no error occurred', function() {
+      db.setConnection(factory.buildSync('connection'));
+
+      return expect(db.connect()).to.be.fulfilled;
+    });
+
+    it('fails to connect if any error occured', function() {
+      db.setConnection(factory.buildSync('connection', {state: 'disconnected'}));
+
+      return expect(db.connect()).to.be.rejected;
+    });
+
+    it('returns error object if connection is failed', function() {
+      db.setConnection(factory.buildSync('connection', {state: 'disconnected'}));
+
+      return expect(db.connect()).to.eventually.be.rejectedWith(Error, 'Unable to connect');
+    });
+
+    it('requires to close the connection by user', function(done) {
+      db.setConnection(factory.buildSync('connection'));
+
+      return db.connect().finally(function() {
+        setTimeout(function() {
+          expect(db.isConnected()).to.be.true;
+          done();
+        }, 100);
+      });
+    });
 
   });
 
