@@ -9,20 +9,27 @@ describe('Doctor', function () {
     it('doesnt generate report if db connection established', function() {
       doctor = new Doctor(fakeDb);
 
-      return doctor.diagnoseDb().then(function() {
-        expect(doctor.hasReportFor('db')).to.be.false;
+      return doctor.diagnoseDbConnection().then(function() {
+        expect(doctor.hasReportFor('dbConnection')).to.be.false;
       });
     });
 
     it('generates report if any connection error', function() {
       doctor = new Doctor(factory.buildSync('db', {state: 'not_connected'}));
 
-      return doctor.diagnoseDb().then(function() {
-        expect(doctor.hasReportFor('db')).to.be.true;
+      return doctor.diagnoseDbConnection().then(function() {
+        expect(doctor.hasReportFor('dbConnection')).to.be.true;
       });
 
     });
 
+    it('closes db connection if no error occurred');
+
+  });
+
+  describe('when giving diagnose', function() {
+
+    it('diagnoses db connection');
   });
 
 });
