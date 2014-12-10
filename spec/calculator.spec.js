@@ -17,7 +17,7 @@ describe('Calculator', function() {
         }
       };
 
-      expect(calculator.calcTotalFor('full', target)).to.eql(11);
+      expect(calculator.weekTotalFor('full', target)).to.eql(11);
     });
 
     it('ignores nonexistent weekdays from the input', function() {
@@ -28,7 +28,7 @@ describe('Calculator', function() {
         }
       };
 
-      expect(calculator.calcTotalFor('half', target)).to.eql(0);
+      expect(calculator.weekTotalFor('half', target)).to.eql(0);
     });
   });
 
