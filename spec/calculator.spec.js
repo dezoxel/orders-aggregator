@@ -30,6 +30,17 @@ describe('Calculator', function() {
 
       expect(calculator.weekTotalFor('half', target)).to.eql(0);
     });
+
+    it('summarizes only for the specified preset', function() {
+      var target = {
+        half: {
+          mon: 5,
+          tue: 6
+        }
+      };
+
+      expect(calculator.weekTotalFor('full', target)).to.eql(0);
+    });
   });
 
   it('calculates totals hash for each target', function() {
