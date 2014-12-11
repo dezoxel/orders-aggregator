@@ -18,13 +18,11 @@ class Calculator
     totals = {}
 
     for target, presets of targets
-      @presetNames.forEach (preset) ->
+      @presetNames.forEach (preset) =>
         return false unless presets[preset]
 
         totals[target] = {} unless totals[target]
-
         totals[target][preset] = @weekTotalFor preset, presets
-      , @
 
     return totals
 
