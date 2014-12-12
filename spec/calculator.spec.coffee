@@ -32,3 +32,8 @@ describe 'Calculator', ->
         half: {tue: 10}
 
     expect(calculator.totals_for targets).to.eql office1: {full: 9, half: 3}, office2: {half: 10}
+
+  it 'summarizes total servings at all', ->
+    totals = office1: {full: 9, half: 3}, office2: {half: 10}
+
+    expect(calculator.total_servings_from(totals)).to.eql 22

@@ -26,4 +26,14 @@ class Calculator
 
     return totals
 
+  total_servings_from: (totals) ->
+    total = 0
+
+    for target, presets of totals
+      for preset, total_per_preset of presets
+        total += total_per_preset
+
+    return total
+
+
 module.exports = Calculator;
