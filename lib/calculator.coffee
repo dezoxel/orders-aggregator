@@ -14,7 +14,7 @@ class Calculator
 
     return total
 
-  calcTotalsFor: (targets) ->
+  totalsFor: (targets) ->
     totals = {}
 
     for target, presets of targets

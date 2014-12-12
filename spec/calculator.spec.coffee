@@ -29,7 +29,8 @@ describe 'Calculator', ->
     targets =
       office1:
         full: {mon: 5, wed: 4}
+        half: {wed: 3}
       office2:
         half: {tue: 10}
 
-    expect(calculator.calcTotalsFor targets).to.eql office1: {full: 9}, office2: {half: 10}
+    expect(calculator.totalsFor targets).to.eql office1: {full: 9, half: 3}, office2: {half: 10}
