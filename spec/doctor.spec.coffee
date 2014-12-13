@@ -10,15 +10,15 @@ describe 'Doctor', ->
   describe 'when diagnosing db connection', ->
 
     it 'doesnt generate report if db connection established', ->
-      doctor.diagnoseDbConnection().finally ->
-        expect(doctor.hasReportFor 'dbConnection').to.be.false
+      doctor.diagnose_db_connection().finally ->
+        expect(doctor.has_report_for 'dbConnection').to.be.false
 
     it 'generates report if any connection error', ->
       doctor = new Doctor factory.buildSync 'db', state: 'disconnected'
 
-      doctor.diagnoseDbConnection().finally ->
-        expect(doctor.hasReportFor 'dbConnection').to.be.true
+      doctor.diagnose_db_connection().finally ->
+        expect(doctor.has_report_for 'dbConnection').to.be.true
 
     it 'closes db connection if no error occurred', ->
-      doctor.diagnoseDbConnection().finally ->
+      doctor.diagnose_db_connection().finally ->
         expect(doctor.getDB().isConnected()).to.be.false

@@ -1,5 +1,4 @@
 _s = require 'underscore.string'
-_ = require 'underscore'
 Promise = require 'bluebird'
 
 class Doctor
@@ -8,12 +7,12 @@ class Doctor
     @_argv = argv
     @reports = {}
 
-  giveDiagnose: ->
-    Promise.all @diagnoseDbConnection()
+  give_diagnose: ->
+    Promise.all @diagnose_db_connection()
       .finally ->
-        @printReport report for report in @reports when report
+        @print_report report for report in @reports when report
 
-  diagnoseDbConnection: ->
+  diagnose_db_connection: ->
     @_db.connect()
       .then( => @_db.closeConnection())
       .error (err) =>
@@ -23,10 +22,10 @@ class Doctor
           title: 'DB connection error'
           message: err.message
 
-  hasReportFor: (problem) ->
+  has_report_for: (problem) ->
     Boolean @reports[problem]
 
-  printReport: (report) ->
+  print_report: (report) ->
     console.log ''
     console.log _s.capitalize report.level  + ': ' + report.title
     console.log report.message
