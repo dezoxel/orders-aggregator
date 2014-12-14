@@ -46,9 +46,7 @@ class DB
         date
   '
     new Promise (resolve, reject) =>
-
       @_connection.query sql, [dish_type, begin_date, end_date], (err, rows) =>
-        @closeConnection()
         if err
           reject err
         else

@@ -15,4 +15,7 @@ Report = require './report'
 
 report = new Report db
 
-report.meat_for_week '2014-12-15', '2014-12-19'
+report.records_for_week_by_dish_type 'meat', '2014-12-15', '2014-12-19'
+report.records_for_week_by_dish_type 'garnish', '2014-12-15', '2014-12-19'
+report.records_for_week_by_dish_type 'salad', '2014-12-15', '2014-12-19'
+report.records_for_week_by_dish_type 'main', '2014-12-15', '2014-12-19'

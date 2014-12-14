@@ -1,23 +1,30 @@
 Table = require 'cli-table'
 moment = require 'moment'
+_s = require 'underscore.string'
 
 class Report
+
   constructor: (db) ->
     @_db = db
 
-  meat_for_week: (begin_date, end_date) ->
+  records_for_week_by_dish_type: (dish_type, begin_date, end_date) ->
     table = new Table()
-    tableHead = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-    tableRow = [0, 0, 0, 0, 0]
+    table_head = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+    table_row = {}
+    table_row_values = [0, 0, 0, 0, 0]
 
-    @_db.records_for_week_by_dish_type 'meat', begin_date, end_date
+    @_db.records_for_week_by_dish_type dish_type, begin_date, end_date
       .then (records) ->
         for record in records
           # look for match of day week to record's date
-          i = tableHead.indexOf(moment(record.date).format('dddd')) - 1
-          tableRow[i] = record.count
+          i = table_head.indexOf(moment(record.date).format('dddd')) - 1
+          table_row_values[i] = record.count
 
-        table.options.head = tableHead
-        table.push {'Meat': tableRow}
+        table.options.head = table_head
+        table_row[_s.capitalize dish_type] = table_row_values
+        table.push table_row
+
+        console.log table.toString()
+
 
 module.exports = Report
