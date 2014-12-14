@@ -10,3 +10,9 @@ doctor_give_diagnose = (argv) ->
 if argv.doctor
   doctor_give_diagnose argv
   return 0
+
+Report = require './report'
+
+report = new Report db
+
+report.meat_for_week '2014-12-15', '2014-12-19'
