@@ -8,9 +8,9 @@ class Doctor
     @reports = {}
 
   give_diagnose: ->
-    Promise.all @diagnose_db_connection()
-      .finally ->
-        @print_report report for report in @reports when report
+    @diagnose_db_connection()
+      .finally =>
+        @print_report report for problem, report of @reports
 
   diagnose_db_connection: ->
     @_db.connect()
