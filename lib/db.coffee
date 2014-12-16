@@ -28,7 +28,8 @@ class DB
     @
 
 
-  records_for_week_by_dish_type: (dish_type, begin_date, end_date) ->
+  records_for_week_by_dish_type: (dish_type, begin_date, end_date, {half} = {}) ->
+    half ?= false
     sql = '
       SELECT
         date,
@@ -41,12 +42,12 @@ class DB
         type = ? AND
         date >= ? AND
         date <= ? AND
-        half = 0
+        half = ?
       GROUP BY
         date
   '
     new Promise (resolve, reject) =>
-      @_connection.query sql, [dish_type, begin_date, end_date], (err, rows) =>
+      @_connection.query sql, [dish_type, begin_date, end_date, half], (err, rows) =>
         if err
           reject err
         else
