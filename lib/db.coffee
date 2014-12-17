@@ -27,7 +27,6 @@ class DB
     @_connection.end()
     @
 
-
   records_for_week_by_dish_type: (dish_type, begin_date, end_date, {half} = {}) ->
     half ?= false
     sql = '
@@ -45,13 +44,15 @@ class DB
         half = ?
       GROUP BY
         date
-  '
+    '
+    @_run_query sql, [dish_type, begin_date, end_date, half]
+
+  _run_query: (sql, data) ->
     new Promise (resolve, reject) =>
-      @_connection.query sql, [dish_type, begin_date, end_date, half], (err, rows) =>
+      @_connection.query sql, data, (err, rows) =>
         if err
           reject err
         else
           resolve rows
-        resolve err, rows
 
 module.exports = DB
