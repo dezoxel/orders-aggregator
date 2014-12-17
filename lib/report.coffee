@@ -43,6 +43,19 @@ class Report
       .then (records) =>
         table.push 'Main/2': @_compose_values_for records, table.options.head
       .then ->
+        console.log 'Total recorded paying servings by dish type'
+        return console.log table.toString()
+
+  total_paying_by_dish_type: (from_date, to_date) ->
+    table = new Table head: ['Dish type', 'Count'];
+
+    @_db.total_paying_by_dish_type '2014-12-15', '2014-12-19'
+
+      .then (records) =>
+        for record in records
+          table.push [record.type, record.count]
+
+        console.log 'Total paying servings by dish type'
         console.log table.toString()
 
   _compose_values_for: (records, table_head) ->
