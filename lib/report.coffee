@@ -46,16 +46,28 @@ class Report
         console.log 'Total recorded paying servings by dish type'
         return console.log table.toString()
 
-  total_paying_by_dish_type: (from_date, to_date) ->
+  total_prime_cost: (from_date, to_date) ->
     table = new Table head: ['Dish type', 'Count'];
 
-    @_db.total_paying_by_dish_type '2014-12-15', '2014-12-19'
+    @_db.total_prime_cost '2014-12-15', '2014-12-19', prime_cost: false
 
       .then (records) =>
         for record in records
           table.push [record.type, record.count]
 
-        console.log 'Total paying servings by dish type'
+        console.log 'Total paying servings'
+        console.log table.toString()
+
+  total_usual_price: (from_date, to_date) ->
+    table = new Table head: ['Dish type', 'Count'];
+
+    @_db.total_prime_cost '2014-12-15', '2014-12-19', prime_cost: true
+
+      .then (records) =>
+        for record in records
+          table.push [record.type, record.count]
+
+        console.log 'Total prime cost servings'
         console.log table.toString()
 
   _compose_values_for: (records, table_head) ->

@@ -16,4 +16,5 @@ Report = require './report'
 report = new Report db
 
 report.records_for_week_by_dish_type '2014-12-15', '2014-12-19'
-report.total_paying_by_dish_type '2014-12-15', '2014-12-19'
+report.total_prime_cost '2014-12-15', '2014-12-19'
+report.total_usual_price '2014-12-15', '2014-12-19'

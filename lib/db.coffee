@@ -47,7 +47,8 @@ class DB
     '
     @_run_query sql, [dish_type, begin_date, end_date, half]
 
-  total_paying_by_dish_type: (begin_date, end_date) ->
+  total_prime_cost: (begin_date, end_date, {prime_cost} ={}) ->
+    prime_cost ?= false
     sql = '
       SELECT
         COUNT(*) count,
@@ -56,13 +57,13 @@ class DB
         record r INNER JOIN
         dish d ON r.dish_id = d.id
       WHERE
-        prime_cost = 0 AND
+        prime_cost = ? AND
         date >= ? AND
         date <= ?
       GROUP BY
         type
     '
-    @_run_query sql, [begin_date, end_date]
+    @_run_query sql, [prime_cost, begin_date, end_date]
 
   _run_query: (sql, data) ->
     new Promise (resolve, reject) =>
