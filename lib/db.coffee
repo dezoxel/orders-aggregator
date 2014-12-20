@@ -47,7 +47,7 @@ class DB
     '
     @_run_query sql, [dish_type, begin_date, end_date, half]
 
-  total_prime_cost: (begin_date, end_date, {prime_cost} ={}) ->
+  total_by_dish_type: (begin_date, end_date, {prime_cost} = {}) ->
     prime_cost ?= false
     sql = '
       SELECT
