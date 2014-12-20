@@ -27,7 +27,7 @@ class DB
     @_connection.end()
     @
 
-  records_for_week_by_dish_type: (dish_type, begin_date, end_date, {half} = {}) ->
+  records_for_week: (dish_type, begin_date, end_date, {half} = {}) ->
     half ?= false
     sql = '
       SELECT
