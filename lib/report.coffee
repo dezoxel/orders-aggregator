@@ -1,76 +1,125 @@
 Table = require 'cli-table'
 moment = require 'moment'
 _s = require 'underscore.string'
+Promise = require 'bluebird'
 
 class Report
 
-  constructor: (db) ->
-    @_db = db
+  constructor: (calculator) ->
+    @_calculator = calculator
 
+  #
+  # Example of data type:
+  #
+  #   records_by_dish_type = {
+  #     meat: [{
+  #       date: new Date()
+  #       count: 5
+  #       title: 'Куриный биток'
+  #     }, {
+  #       date: new Date()
+  #       count: 7
+  #       title: 'Свиной биток'
+  #     }, {
+  #       date: new Date()
+  #       count: 15
+  #       title: 'Котлета по-киевски'
+  #     }, {
+  #       date: new Date()
+  #       count: 15
+  #       title: 'Рыба, фаршированная порциями'
+  #     }, {
+  #       date: new Date()
+  #       count: 15
+  #       title: 'Мясо по-французски с ананасом'
+  #     }],
+  #
+  #     salad: [{
+  #       date: new Date()
+  #       count: 5
+  #       title: 'Салат из краснокочанной капусты'
+  #     }, {
+  #       date: new Date()
+  #       count: 7
+  #       title: 'Салат из свежей капусты со свежим огурцом'
+  #     }, {
+  #       date: new Date()
+  #       count: 15
+  #       title: 'Салат из соленых огурцов с репчатым луком'
+  #     }, {
+  #       date: new Date()
+  #       count: 15
+  #       title: 'Салат из квашеной капусты'
+  #     }, {
+  #       date: new Date()
+  #       count: 15
+  #       title: 'Салат из свежих огурцов и помидоров с ялтинским луком'
+  #     }]
+  #  }
+  # TODO: Handle reject promise
   records_for_week: (from_date, to_date) ->
-    table = new Table head: ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+    new Promise (resolve, reject) =>
 
-    @_db.records_for_week 'meat', from_date, to_date
+      table = new Table head: ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
 
-      .then (records) =>
-        table.push 'Meat': @_compose_values_for records, table.options.head
+      @_calculator.records_for_week from_date, to_date
 
-        return @_db.records_for_week 'garnish', from_date, to_date
-      .then (records) =>
-        table.push 'Garnish': @_compose_values_for records, table.options.head
+        .then (records_by_dish_type) =>
 
-        return @_db.records_for_week 'salad', from_date, to_date
-      .then (records) =>
-        table.push 'Salad': @_compose_values_for records, table.options.head
+          for dish_type, records of records_by_dish_type
+            row = {}
+            row[dish_type] = @_compose_values_using records, table.options.head
+            table.push row
 
-        return @_db.records_for_week 'main', from_date, to_date
-      .then (records) =>
-        table.push 'Main': @_compose_values_for records, table.options.head
-
-        return @_db.records_for_week 'meat', from_date, to_date, half: true
-      .then (records) =>
-        table.push 'Meat/2': @_compose_values_for records, table.options.head
-
-        return @_db.records_for_week 'garnish', from_date, to_date, half: true
-      .then (records) =>
-        table.push 'Garnish/2': @_compose_values_for records, table.options.head
-
-        return @_db.records_for_week 'salad', from_date, to_date, half: true
-      .then (records) =>
-        table.push 'Salad/2': @_compose_values_for records, table.options.head
-
-        return @_db.records_for_week 'main', from_date, to_date, half: true
-      .then (records) =>
-        table.push 'Main/2': @_compose_values_for records, table.options.head
-      .then ->
-        console.log 'Total recorded paying servings by dish type'
-        return console.log table.toString()
+        .then -> resolve table
 
   total_prime_cost: (from_date, to_date) ->
-    table = new Table head: ['Dish type', 'Count'];
+    @_total_by_dish_type from_date, to_date, prime_cost: true
 
-    @_db.total_prime_cost '2014-12-15', '2014-12-19', prime_cost: false
+  total_usual_cost: (from_date, to_date) ->
+    @_total_by_dish_type from_date, to_date, prime_cost: false
 
-      .then (records) =>
-        for record in records
-          table.push [record.type, record.count]
+  # TODO: Handle reject promise
+  _total_by_dish_type: (from_date, to_date, {prime_cost} = {}) ->
+    prime_cost ?= false
 
-        console.log 'Total paying servings'
-        console.log table.toString()
+    new Promise (resolve, reject) =>
+      table = new Table head: ['Dish type', 'Count'];
 
-  total_usual_price: (from_date, to_date) ->
-    table = new Table head: ['Dish type', 'Count'];
+      @_calculator.total_by_dish_type from_date, to_date, prime_cost: prime_cost
 
-    @_db.total_prime_cost '2014-12-15', '2014-12-19', prime_cost: true
+        .then (records) =>
+          for record in records
+            table.push [record.type, record.count]
 
-      .then (records) =>
-        for record in records
-          table.push [record.type, record.count]
+        .then -> resolve table
 
-        console.log 'Total prime cost servings'
-        console.log table.toString()
-
-  _compose_values_for: (records, table_head) ->
+  #
+  # Example of data type:
+  #
+  #   records = [{
+  #       date: new Date()
+  #       count: 5
+  #       title: 'Куриный биток'
+  #     }, {
+  #       date: new Date()
+  #       count: 7
+  #       title: 'Свиной биток'
+  #     }, {
+  #       date: new Date()
+  #       count: 15
+  #       title: 'Котлета по-киевски'
+  #     }, {
+  #       date: new Date()
+  #       count: 15
+  #       title: 'Рыба, фаршированная порциями'
+  #     }, {
+  #       date: new Date()
+  #       count: 15
+  #       title: 'Мясо по-французски с ананасом'
+  #     }
+  #   ]
+  _compose_values_using: (records, table_head) ->
     values = [0, 0, 0, 0, 0]
 
     for record in records
@@ -79,7 +128,5 @@ class Report
       values[i] = record.count
 
     values
-
-
 
 module.exports = Report
