@@ -12,9 +12,25 @@ if argv.doctor
   return 0
 
 Report = require './report'
+Calculator = require './calculator'
 
-report = new Report db
+calculator = new Calculator db
+report = new Report calculator
 
 report.records_for_week '2014-12-15', '2014-12-19'
-report.total_prime_cost '2014-12-15', '2014-12-19'
-report.total_usual_price '2014-12-15', '2014-12-19'
+  .then (table) ->
+    console.log 'Total recorded paying servings by dish type'
+    console.log table.toString()
+
+    return report.total_prime_cost '2014-12-15', '2014-12-19'
+
+  .then (table) ->
+    console.log 'Total prime cost servings'
+    console.log table.toString()
+
+    return report.total_usual_cost '2014-12-15', '2014-12-19'
+
+  .then (table) ->
+    console.log 'Total usual cost servings'
+    console.log table.toString()
+
