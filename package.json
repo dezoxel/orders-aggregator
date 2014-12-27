@@ -34,7 +34,8 @@
     "factory-girl": "~1.1.2",
     "sinon-chai": "~2.6.0",
     "gulp-coffee": "~2.2.0",
-    "del": "~1.1.0"
+    "del": "~1.1.0",
+    "google-spreadsheets": "~0.4.1"
   },
   "dependencies": {
     "colors": "~1.0.3",
@@ -46,6 +47,7 @@
     "cli-table": "~0.3.1",
     "moment": "~2.8.4",
     "js-yaml": "~3.2.7",
+    "google-spreadsheet": "~0.2.8",
     "googleapis": "~1.1.4"
   }
 }
