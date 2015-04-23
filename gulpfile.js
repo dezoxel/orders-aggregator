@@ -2,6 +2,7 @@ var gulp = require('gulp');
 var mocha = require('gulp-mocha');
 var coffee = require('gulp-coffee');
 var del = require('del');
+var coffeelint = require('gulp-coffeelint');
 
 gulp.task('clean', function (cb) {
   del(['dist'], cb);
@@ -26,4 +27,10 @@ gulp.task('compile_coffee:spec', ['clean'], function() {
   return gulp.src('./spec/**/*.coffee')
     .pipe(coffee())
     .pipe(gulp.dest('./dist/spec/'));
+});
+
+gulp.task('lint', function () {
+  gulp.src(['./lib/**/*.coffee', './lib/spec/**/*.coffee'])
+    .pipe(coffeelint())
+    .pipe(coffeelint.reporter())
 });
