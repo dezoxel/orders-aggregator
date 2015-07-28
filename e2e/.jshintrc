@@ -1,0 +1,14 @@
+{
+  "extends": "../.jshintrc",
+  "globals": {
+    "browser": false,
+    "by": false,
+    "$": false,
+    "$$": false,
+    "element": false,
+    "describe": false,
+    "beforeEach": false,
+    "it": false,
+    "expect": false
+  }
+}
