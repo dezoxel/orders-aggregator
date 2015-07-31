@@ -18,6 +18,8 @@
         _fri: null,
 
         constructor: function(params) {
+          params = params || {};
+
           if (!this.isValidConstructorParams(params)) {
             throw new Error('Order: constructor params is not valid');
           }
@@ -28,19 +30,10 @@
           this._wed = params.wed;
           this._thu = params.thu;
           this._fri = params.fri;
-          this._id = this._generateRandomId();
         },
 
         isValidConstructorParams: function(params) {
-          return params.client instanceof Client;
-        },
-
-        _generateRandomId: function() {
-          return this._getRandomInt(1, 99999999);
-        },
-
-        _getRandomInt: function(min, max) {
-          return Math.floor(Math.random() * (max - min + 1)) + min;
+          return params.client && params.client instanceof Client;
         },
 
         dishsetForMon: function() {
