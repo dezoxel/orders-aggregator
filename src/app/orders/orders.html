@@ -1,0 +1,20 @@
+<div class="container-fluid">
+  <table class="table table-striped">
+    <thead>
+      <th width="15%">Client</th>
+      <th width="17%">Mon</th>
+      <th width="17%">Tue</th>
+      <th width="17%">Wed</th>
+      <th width="17%">Thu</th>
+      <th width="17%">Fri</th>
+    </thead>
+    <tr ng-repeat="order in vm.orders">
+      <td>{{ order.client().fullName() }}</td>
+      <td>{{ order.dishsetForMon() }}</td>
+      <td>{{ order.dishsetForTue() }}</td>
+      <td>{{ order.dishsetForWed() }}</td>
+      <td>{{ order.dishsetForThu() }}</td>
+      <td>{{ order.dishsetForFri() }}</td>
+    </tr>
+  </table>
+</div>

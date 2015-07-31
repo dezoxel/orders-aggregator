@@ -5,6 +5,7 @@ var gulp = require('gulp');
 var conf = require('./conf');
 
 var karma = require('karma');
+var $ = require('gulp-load-plugins')();
 
 function runTests (singleRun, done) {
   karma.server.start({
@@ -22,4 +23,14 @@ gulp.task('test', ['scripts'], function(done) {
 
 gulp.task('test:auto', ['watch'], function(done) {
   runTests(false, done);
+});
+
+gulp.task('codeclimate', function() {
+  var token = '19deb5fc3438551272f5d3352c0ec3f85175e75f91657ae1f71c02038c5f0ec6';
+  var exec = './node_modules/.bin/codeclimate-test-reporter';
+  var lcovPath = './coverage/lcov.info';
+  var command = 'CODECLIMATE_REPO_TOKEN=' + token + ' ' + exec + ' < ' + lcovPath;
+  console.log('Codeclimate: Uploading... ' + command);
+
+  $.shell.task(command);
 });

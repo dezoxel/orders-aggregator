@@ -14,7 +14,7 @@ function listFiles() {
 
   return wiredep(wiredepOptions).js
     .concat([
-      path.join(conf.paths.src, '/app/**/*.module.js'),
+      path.join(conf.paths.src, '/app/**/*module.js'),
       path.join(conf.paths.src, '/app/**/*.js'),
       path.join(conf.paths.src, '/**/*.spec.js'),
       path.join(conf.paths.src, '/**/*.mock.js'),
@@ -31,7 +31,7 @@ module.exports = function(config) {
 
     autoWatch: false,
 
-    frameworks: ['mocha', 'chai', 'chai-as-promised', 'angular-filesort'],
+    frameworks: ['mocha', 'chai', 'chai-as-promised', 'sinon', 'sinon-chai', 'angular-filesort'],
 
     angularFilesort: {
       whitelist: [path.join(conf.paths.src, '/**/!(*.html|*.spec|*.mock).js')]
@@ -49,12 +49,25 @@ module.exports = function(config) {
       'karma-angular-filesort',
       'karma-mocha',
       'karma-chai-plugins',
+      'karma-sinon',
+      'karma-coverage',
       'karma-ng-html2js-preprocessor'
     ],
 
     preprocessors: {
-      'src/**/*.html': ['ng-html2js']
+      'src/**/*.html': ['ng-html2js'],
+      'src/app/**/*.js': ['coverage']
+    },
+
+    // Code coverage report
+    reporters: ['progress', 'coverage'],
+
+    coverageReporter: {
+      type: 'lcovonly',
+      dir: 'coverage',
+      subdir: '.'
     }
+
   };
 
   // This block is needed to execute Chrome on Travis

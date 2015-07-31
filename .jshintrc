@@ -17,6 +17,8 @@
     "beforeEach": false,
     "it": false,
     "expect": false,
-    "moment": false
+    "moment": false,
+    "Class": false,
+    "sinon": false
   }
 }
