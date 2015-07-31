@@ -14,6 +14,8 @@
         _lastName: null,
 
         constructor: function(params) {
+          params = params || {};
+
           if (!this.isValidConstructorParams(params)) {
             throw new Error('Client: constructor params is not valid');
           }

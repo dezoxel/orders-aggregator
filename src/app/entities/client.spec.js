@@ -56,6 +56,13 @@ describe('Client', function () {
 
         }).to.throw('Client: constructor params is not valid');
       });
+
+      it('throws an exception if both first and last name are not specified', function() {
+
+        expect(function() {
+          client = new Client();
+        }).to.throw('Client: constructor params is not valid');
+      });
     });
 
   });
