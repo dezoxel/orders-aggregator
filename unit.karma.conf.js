@@ -31,11 +31,7 @@ module.exports = function(config) {
 
     autoWatch: false,
 
-    frameworks: ['mocha', 'chai', 'chai-as-promised', 'sinon', 'sinon-chai', 'angular-filesort'],
-
-    angularFilesort: {
-      whitelist: [path.join(conf.paths.src, '/**/!(*.html|*.spec|*.mock).js')]
-    },
+    frameworks: ['mocha', 'chai', 'chai-as-promised', 'sinon', 'sinon-chai'],
 
     ngHtml2JsPreprocessor: {
       stripPrefix: 'src/',
@@ -46,7 +42,6 @@ module.exports = function(config) {
 
     plugins : [
       'karma-phantomjs-launcher',
-      'karma-angular-filesort',
       'karma-mocha',
       'karma-chai-plugins',
       'karma-sinon',
