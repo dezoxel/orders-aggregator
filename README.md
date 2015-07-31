@@ -2,6 +2,11 @@
 
 Automation of accounting for small food business
 
+## TODO
+- Migrate to Angular UI Router
+- Migrate to ES6
+- Integrate Read The Docs
+
 [travis-image]: https://travis-ci.org/dezoxel/sfba.png?branch=master
 [travis-url]: https://travis-ci.org/dezoxel/sfba
 [codeclimate-image]: https://codeclimate.com/github/dezoxel/sfba/badges/gpa.svg

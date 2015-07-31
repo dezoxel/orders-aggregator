@@ -30,16 +30,8 @@
           return this._firstName + ' ' + this._lastName;
         },
 
-        setFirstName: function(firstName) {
-          this._firstName = firstName;
-        },
-
         firstName: function() {
           return this._firstName;
-        },
-
-        setLastName: function(lastName) {
-          this._lastName = lastName;
         },
 
         lastName: function() {

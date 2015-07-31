@@ -2,6 +2,8 @@
   'use strict';
 
   angular
-    .module('sfba.entities', []);
+    .module('sfba.entities', [
+      'sfba.core'
+    ]);
 
 })();

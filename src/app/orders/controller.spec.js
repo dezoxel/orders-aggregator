@@ -46,7 +46,7 @@ describe('ListController', function () {
     resolvePromises();
   });
 
-  it('fetches the orders for the current week', function() {
+  it('uses current week when fetching orders', function() {
     var begin = vm.week.getStartDate();
     var end = vm.week.getEndDate().clone().add(1, 'day'); // because moment.isBetween() is exclusive
 
