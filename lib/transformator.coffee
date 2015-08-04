@@ -58,8 +58,16 @@ class Transformator
 
         weekday = @number_to_weekday[day_number]
         dish_type = @user_entry_to_dish_type one_day_record.value.trim()
-        @_increase_count_for dish_type, weekday, office
-        @_record_person person_name, dish_type, weekday, office
+
+        if dish_type
+          @_increase_count_for dish_type, weekday, office
+          @_record_person person_name, dish_type, weekday, office
+        else
+          console.error 'Unrecognized user entry: >>>' + one_day_record.value + '<<<'
+          console.error 'Office: ' + office
+          console.error 'Weekday: ' + weekday
+          console.error 'Person: ' + person_name
+
 
     @result
 
@@ -112,6 +120,6 @@ class Transformator
       when '0.5 без гарнира', '0,5 без гарнира', 'средняя без гарнира'
         'Средних без гарнира'
       else
-        console.error 'Unrecognized user entry: >>>' + user_entry + '<<<'
+        false
 
 module.exports = Transformator
