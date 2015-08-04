@@ -30,7 +30,8 @@ gulp.task('codeclimate', function() {
   var exec = path.join(__dirname, '../node_modules/.bin/codeclimate-test-reporter');
   var lcovPath = path.join(__dirname, '../coverage/lcov.info');
   var command = 'CODECLIMATE_REPO_TOKEN=' + token + ' ' + exec + ' < ' + lcovPath;
-  console.log('Codeclimate: Uploading... ' + command);
+  console.log('Codeclimate: ' + command);
 
-  $.shell.task(command);
+  $.shell.task(command)();
 });
+
