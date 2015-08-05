@@ -4,7 +4,8 @@
   angular
     .module('sfba.orders', [
       'sfba.core',
-      'sfba.entities'
+      'sfba.entities',
+      'smart-table'
     ]);
 
 })();

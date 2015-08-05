@@ -1,4 +1,4 @@
-describe('ListController', function () {
+describe('OrdersController', function () {
   'use strict';
 
   function resolvePromises() {
@@ -36,12 +36,11 @@ describe('ListController', function () {
     expect(vm.orders).to.be.empty;
   });
 
-  it('fetches the orders', function(done) {
-    vm.week.fetchOrders()
+  it('fetches the orders', function() {
+    vm.fetchOrders()
       .then(function() {
         expect(vm.orders).to.deep.equal([1,2,3]);
-      })
-      .then(done);
+      });
 
     resolvePromises();
   });
@@ -56,7 +55,7 @@ describe('ListController', function () {
   it('logs error message if any error occured while fetching orders', function(done) {
     Week.prototype.fetchOrders = rejectedPromise();
 
-    vm.fetchOrdersForCurrentWeek()
+    vm.fetchOrders()
       .then(function() {
         expect($log.error).to.have.been.called;
       })

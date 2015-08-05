@@ -10,20 +10,17 @@
 
     vm.init = function() {
       vm.defineInitialState();
-
-      vm.fetchOrdersForCurrentWeek();
     };
 
     vm.defineInitialState = function() {
       vm.orders = [];
-      vm.week = null;
-    };
-
-    vm.fetchOrdersForCurrentWeek = function() {
       vm.week = new Week({
         startDate: moment().startOf('isoWeek'),
       });
+    };
 
+    // is called automatically by Smart Table directive (st-pipe)
+    vm.fetchOrders =function() {
       return vm.week.fetchOrders()
         .then(function(orders) {
           vm.orders = orders;
