@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('sfba.orders')
+    .module('sfba.entities')
     .factory('sampleOrdersList', function(Order, Client) {
 
       var pupkin = new Client({
