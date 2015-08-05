@@ -46,7 +46,8 @@ module.exports = function(config) {
       'karma-chai-plugins',
       'karma-sinon',
       'karma-coverage',
-      'karma-ng-html2js-preprocessor'
+      'karma-ng-html2js-preprocessor',
+      'karma-mocha-reporter'
     ],
 
     preprocessors: {
@@ -54,8 +55,7 @@ module.exports = function(config) {
       'src/app/**/*.js': ['coverage']
     },
 
-    // Code coverage report
-    reporters: ['progress', 'coverage'],
+    reporters: ['coverage', 'mocha'],
 
     coverageReporter: {
       type: 'lcovonly',
