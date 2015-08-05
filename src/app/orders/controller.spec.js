@@ -47,8 +47,8 @@ describe('ListController', function () {
   });
 
   it('uses current week when fetching orders', function() {
-    var begin = vm.week.getStartDate();
-    var end = vm.week.getEndDate().clone().add(1, 'day'); // because moment.isBetween() is exclusive
+    var begin = vm.week.startDate();
+    var end = vm.week.endDate().clone().add(1, 'day'); // because moment.isBetween() is exclusive
 
     expect(moment().isBetween(begin, end)).to.be.true;
   });

@@ -11,8 +11,11 @@
 
         _startDate: null,
         _endDate: null,
+        _orders: [],
 
         constructor: function(params) {
+          params = params || {};
+
           if (!this.isValidConstructorParams(params)) {
             throw new Error('Week: constructor params is not valid');
           }
@@ -21,9 +24,13 @@
         },
 
         setStartDate: function(startDate) {
+          if (!moment.isMoment(startDate)) {
+            throw new Error('Week: Specified week start date is not a Moment instance!');
+          }
+
           // 1 - iso number of Monday
           if (startDate.isoWeekday() !== 1) {
-            throw new Error('Week: Specified date for the start week date is not a Monday!');
+            throw new Error('Week: Specified week start date is not a Monday!');
           }
 
           this._startDate = startDate;
@@ -32,26 +39,31 @@
           this._endDate = startDate.clone().add(6, 'days');
         },
 
-        getStartDate: function() {
+        startDate: function() {
           return this._startDate;
         },
 
-        getEndDate: function() {
+        endDate: function() {
           return this._endDate;
         },
 
         isValidConstructorParams: function(params) {
-          return moment.isMoment(params.startDate);
+          return params.startDate;
+        },
+
+        orders: function() {
+          return this._orders;
         },
 
         fetchOrders: function() {
           return $q(function(resolve, reject) {
             if (true) {
-              resolve(sampleOrdersList);
+              this._orders = sampleOrdersList;
+              resolve(this._orders);
             } else {
               reject();
             }
-          });
+          }.bind(this));
         }
 
       });

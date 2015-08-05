@@ -9,7 +9,7 @@ describe('Client', function () {
     Client = _Client_;
   }));
 
-  describe('when creating', function() {
+  describe('when create', function() {
 
     describe('is valid', function() {
 
