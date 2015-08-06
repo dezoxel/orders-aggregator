@@ -20,6 +20,7 @@
             throw new Error('Client: constructor params is not valid');
           }
 
+          this._id = params.id;
           this._firstName = params.firstName;
           this._lastName = params.lastName;
         },

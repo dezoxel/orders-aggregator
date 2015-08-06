@@ -29,7 +29,7 @@ describe('Client', function () {
       });
 
       it('returns the empty ID', function() {
-        expect(client.id()).to.be.null;
+        expect(client.id()).to.be.empty;
       });
     });
 
