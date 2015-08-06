@@ -1,10 +1,6 @@
 describe('Week', function () {
   'use strict';
 
-  function resolvePromises() {
-    $rootScope.$digest();
-  }
-
   beforeEach(module('sfba.entities'));
 
   var Week, week, startDate, $rootScope;
@@ -97,51 +93,4 @@ describe('Week', function () {
 
   });
 
-  describe('when fetching orders', function() {
-
-    var sampleOrdersList;
-    beforeEach(inject(function(_sampleOrdersList_) {
-      sampleOrdersList = _sampleOrdersList_;
-
-      week = new Week({
-        startDate: moment().startOf('isoWeek')
-      });
-    }));
-
-    it('makes async request', function() {
-      expect(week.fetchOrders().then).to.exist;
-    });
-
-    it('reject promise if any error occured');
-
-    describe('when ok', function() {
-
-      it('returns an array', function() {
-        expect(week.fetchOrders()).to.eventually.is.an('array');
-
-        resolvePromises();
-      });
-
-      it('returns an array of Order instances', function() {
-        var order = sampleOrdersList[0];
-
-        expect(week.fetchOrders()).to.eventually.contain(order);
-
-        resolvePromises();
-      });
-
-      it('returns empty array if no instances found');
-
-      it('caches response', function(done) {
-        week.fetchOrders()
-          .then(function() {
-            expect(week.orders()).to.deep.equal(sampleOrdersList);
-          })
-          .then(done);
-
-        resolvePromises();
-      });
-    });
-
-  });
 });

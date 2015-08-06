@@ -5,13 +5,12 @@
     .module('sfba.entities')
     .factory('Week', Week);
 
-    function Week(Class, $q, Order, sampleOrdersList, moment) {
+    function Week(Class, $q, Order, moment) {
 
       return Class.create({
 
         _startDate: null,
         _endDate: null,
-        _orders: [],
 
         constructor: function(params) {
           params = params || {};
@@ -49,21 +48,6 @@
 
         isValidConstructorParams: function(params) {
           return params.startDate;
-        },
-
-        orders: function() {
-          return this._orders;
-        },
-
-        fetchOrders: function() {
-          return $q(function(resolve, reject) {
-            if (true) {
-              this._orders = sampleOrdersList;
-              resolve(this._orders);
-            } else {
-              reject();
-            }
-          }.bind(this));
         }
 
       });

@@ -3,11 +3,34 @@
 
   angular
     .module('sfba.entities')
-    .factory('Order', Order);
+    .factory('Order', function($log, Class, Client, orderTypes, backend) {
 
-    function Order(Class, Client, orderTypes) {
+      var Order = Class.create({
 
-      return Class.create({
+        statics: {
+          where: function(week) {
+            return backend.get('/week/' + week.startDate().format('YYYY-MM-DD') + '/orders')
+              .then(function(orders) {
+                return Order.createCollectionFrom(orders);
+              })
+              .catch(function() {
+                $log.error('Order: An error occured when fetching orders');
+              });
+          },
+
+          createCollectionFrom: function(orders) {
+            return orders.map(function(order) {
+              return Order.createInstanceFrom(order);
+            });
+          },
+
+          createInstanceFrom: function(params) {
+            return new Order(
+              params,
+              new Client(params.client)
+            );
+          }
+        },
 
         _id: null,
         _client: null,
@@ -17,14 +40,14 @@
         _thu: null,
         _fri: null,
 
-        constructor: function(params) {
+        constructor: function(params, client) {
           params = params || {};
 
           if (!this.isValidConstructorParams(params)) {
             throw new Error('Order: constructor params is not valid');
           }
 
-          this._client = params.client;
+          this._client = client;
           this._mon = params.mon;
           this._tue = params.tue;
           this._wed = params.wed;
@@ -33,7 +56,7 @@
         },
 
         isValidConstructorParams: function(params) {
-          return params.client && params.client instanceof Client;
+          return params.client;
         },
 
         dishsetForMon: function() {
@@ -69,5 +92,7 @@
         }
 
       });
-    }
+
+      return Order;
+    });
 })(angular);

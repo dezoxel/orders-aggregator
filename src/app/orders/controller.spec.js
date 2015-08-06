@@ -5,32 +5,28 @@ describe('OrdersController', function () {
     $rootScope.$digest();
   }
 
-  function fulfilledPromise(args) {
-    return sinon.stub().returns($q(function(resolve) {
-      resolve(args);
-    }));
-  }
-
-  function rejectedPromise(entry) {
-    return sinon.stub().returns($q(function(resolve, reject) {
-      reject(entry);
-    }));
-  }
-
   beforeEach(module('sfba.orders'));
 
-  var vm, Week, $rootScope, $q, $log;
+  var vm, Week, $rootScope, $q, $log, Order;
 
-  beforeEach(inject(function ($controller, _$rootScope_, _$q_, moment, _Week_) {
+  beforeEach(inject(function ($controller, _$rootScope_, _$q_, moment, _Week_, _Order_) {
     $rootScope = _$rootScope_;
     $q = _$q_;
     Week = _Week_;
-    Week.prototype.fetchOrders = fulfilledPromise([1,2,3]);
+    Order = _Order_;
+
+    sinon.stub(Order, 'where').returns($q(function(resolve) {
+      resolve([1,2,3]);
+    }))
 
     $log = {error: sinon.stub()};
 
     vm = $controller('OrdersController', {Week: Week, moment: moment, $log: $log});
   }));
+
+  afterEach(function() {
+    Order.where.restore();
+  });
 
   it('has empty orders list as initial state', function() {
     expect(vm.orders).to.be.empty;
@@ -52,14 +48,16 @@ describe('OrdersController', function () {
     expect(moment().isBetween(begin, end)).to.be.true;
   });
 
-  it('logs error message if any error occured while fetching orders', function(done) {
-    Week.prototype.fetchOrders = rejectedPromise();
+  it('logs error message if any error occured while fetching orders', function() {
+    Order.where.restore();
+    sinon.stub(Order, 'where').returns($q(function(resolve, reject) {
+      reject();
+    }))
 
     vm.fetchOrders()
       .then(function() {
         expect($log.error).to.have.been.called;
-      })
-      .then(done);
+      });
 
     resolvePromises();
   });
