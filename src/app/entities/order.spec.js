@@ -244,10 +244,15 @@ describe('Order', function () {
     }));
 
     var week;
-    beforeEach('create week instance', inject(function(Week, moment) {
+    beforeEach('create week', inject(function(Week, moment) {
       week = new Week({
         startDate: moment().startOf('isoWeek')
       });
+    }));
+
+    var company;
+    beforeEach('create company', inject(function(Company) {
+      company = new Company({id: 1, title: 'Cogniance'});
     }));
 
     context('given valid arguments', function() {
@@ -264,7 +269,7 @@ describe('Order', function () {
         });
 
         it('returns an array of Order instances', function() {
-          Order.findWhere(week)
+          Order.findWhere(company, week)
             .then(function(orders) {
               expect(orders).to.be.an('array').that.have.property(1).that.is.an.instanceOf(Order);
             });
@@ -272,10 +277,11 @@ describe('Order', function () {
           resolvePromises();
         });
 
-        it('makes request to "/week/YYYY-MM-DD/orders" resource and use startDate', function() {
-          Order.findWhere(week)
+        it('makes request to correct url', function() {
+          Order.findWhere(company, week)
             .then(function() {
-              expect(backend.get).to.have.been.calledWith('/week/' + week.startDate().format('YYYY-MM-DD') + '/orders');
+              var ordersUrl = '/company/1/week/' + week.startDate().format('YYYY-MM-DD') + '/orders';
+              expect(backend.get).to.have.been.calledWith(ordersUrl);
             });
 
           resolvePromises();
@@ -295,7 +301,7 @@ describe('Order', function () {
         });
 
         it('returns empty array', function() {
-          Order.findWhere(week)
+          Order.findWhere(company, week)
             .then(function(orders) {
               expect(orders).to.be.an('array').that.have.length(0);
             });
@@ -324,7 +330,7 @@ describe('Order', function () {
         });
 
         it('rejects promise and logs the error', function() {
-          Order.findWhere(week)
+          Order.findWhere(company, week)
             .then(function() {
               expect($log.error).to.have.been.called;
             });

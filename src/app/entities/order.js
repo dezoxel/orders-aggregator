@@ -8,8 +8,9 @@
       var Order = Class.create({
 
         statics: {
-          findWhere: function(week) {
-            return backend.get('/week/' + week.startDate().format('YYYY-MM-DD') + '/orders')
+          findWhere: function(company, week) {
+            var ordersUrl = '/company/' + company.id() + '/week/' + week.startDate().format('YYYY-MM-DD') + '/orders';
+            return backend.get(ordersUrl)
               .then(function(orders) {
                 return Order.createCollectionFrom(orders);
               })
