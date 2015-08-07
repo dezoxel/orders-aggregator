@@ -19,16 +19,16 @@
           },
 
           createCollectionFrom: function(orders) {
-            return orders.map(function(order) {
-              return Order.createInstanceFrom(order);
-            });
-          },
+            if (!orders || !(orders instanceof Array)) {
+              return [];
+            }
 
-          createInstanceFrom: function(params) {
-            return new Order(
-              params,
-              new Client(params.client)
-            );
+            return orders.map(function(order) {
+              return new Order(
+                new Client(order.client),
+                order
+              );
+            });
           }
         },
 
@@ -40,14 +40,15 @@
         _thu: null,
         _fri: null,
 
-        constructor: function(params, client) {
+        constructor: function(client, params) {
           params = params || {};
 
-          if (!this.isValidConstructorParams(params)) {
+          if (!this.isValidConstructorParams(params, client)) {
             throw new Error('Order: constructor params is not valid');
           }
 
-          this._client = client;
+          this._id = params.id;
+          this.setClient(client);
           this._mon = params.mon;
           this._tue = params.tue;
           this._wed = params.wed;
@@ -55,8 +56,8 @@
           this._fri = params.fri;
         },
 
-        isValidConstructorParams: function(params) {
-          return params.client;
+        isValidConstructorParams: function(params, client) {
+          return client;
         },
 
         dishsetForMon: function() {
@@ -80,7 +81,11 @@
         },
 
         setClient: function(client) {
-          this._client = client;
+          if (client && client instanceof Client) {
+            this._client = client;
+          } else {
+            throw new Error('Order: invalid argument for setClient');
+          }
         },
 
         client: function() {

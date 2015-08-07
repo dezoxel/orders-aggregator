@@ -14,6 +14,7 @@
 
     vm.defineInitialState = function() {
       vm.orders = [];
+      // current week
       vm.week = new Week({
         startDate: moment().startOf('isoWeek'),
       });
