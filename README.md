@@ -3,6 +3,7 @@
 Automation of accounting for small food business
 
 ## TODO
+- Integrate something similar to Ruby Guard for automatically run tests
 - Migrate to Angular UI Router
 - Migrate to ES6
 - Integrate Read The Docs
