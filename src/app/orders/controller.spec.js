@@ -7,13 +7,14 @@ describe('OrdersController', function () {
 
   beforeEach(module('sfba.orders'));
 
-  var $rootScope, $q, Week, Order, Client;
-  beforeEach('reassign injected services', inject(function (_$rootScope_, _$q_, _Week_, _Order_, _Client_) {
+  var $rootScope, $q, Week, Order, Client, Company;
+  beforeEach('reassign injected services', inject(function (_$rootScope_, _$q_, _Week_, _Order_, _Client_, _Company_) {
     $rootScope = _$rootScope_;
     $q = _$q_;
     Week = _Week_;
     Order = _Order_;
     Client = _Client_;
+    Company = _Company_;
   }));
 
   var $log;
@@ -37,6 +38,10 @@ describe('OrdersController', function () {
       var end = vm.week.endDate().clone().add(1, 'day'); // because moment.isBetween() is exclusive
 
       expect(moment().isBetween(begin, end)).to.be.true;
+    });
+
+    it('has no company assigned', function() {
+      expect(vm.company).to.be.null;
     });
   });
 
@@ -84,6 +89,51 @@ describe('OrdersController', function () {
 
       it('logs error message if any error occured while fetching orders', function() {
         vm.fetchOrders()
+          .then(function() {
+            expect($log.error).to.have.been.called;
+          });
+
+        resolvePromises();
+      });
+    });
+  });
+
+  describe('#fetchCompany', function() {
+    var company;
+    beforeEach('create company', function() {
+      company = new Company('Cogniance');
+    });
+
+    beforeEach('stub company', function() {
+      sinon.stub(Company, 'find').returns($q(function(resolve) {
+        resolve(company);
+      }));
+    });
+
+    afterEach('unstub company', function() {
+      Company.find.restore();
+    });
+
+    it('returns an instance of Company', function() {
+      vm.fetchCompany()
+        .then(function() {
+          expect(vm.company).to.be.an.instanceOf(Company);
+        });
+
+      resolvePromises();
+    });
+
+    context('when error occured', function() {
+
+      beforeEach(function() {
+        Company.find.restore();
+        sinon.stub(Company, 'find').returns($q(function(resolve, reject) {
+          reject();
+        }));
+      });
+
+      it('logs error message if any error occured while fetching orders', function() {
+        vm.fetchCompany()
           .then(function() {
             expect($log.error).to.have.been.called;
           });
