@@ -17,7 +17,7 @@ describe('OrdersController', function () {
 
     sinon.stub(Order, 'where').returns($q(function(resolve) {
       resolve([1,2,3]);
-    }))
+    }));
 
     $log = {error: sinon.stub()};
 
@@ -52,7 +52,7 @@ describe('OrdersController', function () {
     Order.where.restore();
     sinon.stub(Order, 'where').returns($q(function(resolve, reject) {
       reject();
-    }))
+    }));
 
     vm.fetchOrders()
       .then(function() {

@@ -10,6 +10,7 @@ describe('Order', function () {
     Client = _Client_;
   }));
 
+  // TODO: Use Factory instead of Fixture
   beforeEach(function () {
     orderData = {
       client: {
@@ -74,27 +75,26 @@ describe('Order', function () {
     var $rootScope, $q, $log;
     var week, backend, order;
 
-    beforeEach(inject(function(_$rootScope_, _$q_, _$log_, _backend_) {
+    beforeEach('reassign injected services', inject(function(_$rootScope_, _$q_, _$log_, _backend_) {
       $rootScope = _$rootScope_;
       $q = _$q_;
       $log = _$log_;
       backend = _backend_;
     }));
 
-    beforeEach(inject(function(Week, moment) {
+    beforeEach('create week instance', inject(function(Week, moment) {
       week = new Week({
         startDate: moment().startOf('isoWeek')
       });
     }));
 
-    beforeEach(function() {
-      // stub network activity
+    beforeEach('stub network activity', function() {
       sinon.stub(backend, 'get').returns($q(function(resolve) {
         resolve([orderData]);
       }));
     });
 
-    afterEach(function() {
+    afterEach('restore stubbed network activity', function() {
       backend.get.restore();
     });
 
@@ -104,8 +104,7 @@ describe('Order', function () {
 
     describe('when error occured', function() {
 
-      beforeEach(function() {
-        // we need rejected promise, so restub the backend
+      beforeEach('stub network with returned error', function() {
         backend.get.restore();
         sinon.stub(backend, 'get').returns($q(function(resolve, reject) {
           reject('Some error');
