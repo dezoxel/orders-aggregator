@@ -22,7 +22,7 @@
 
     // is called automatically by Smart Table directive (st-pipe)
     vm.fetchOrders =function() {
-      return Order.where(vm.week)
+      return Order.findWhere(vm.week)
         .then(function(orders) {
           vm.orders = orders;
         })

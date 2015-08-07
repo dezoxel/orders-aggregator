@@ -15,7 +15,7 @@ describe('OrdersController', function () {
     Week = _Week_;
     Order = _Order_;
 
-    sinon.stub(Order, 'where').returns($q(function(resolve) {
+    sinon.stub(Order, 'findWhere').returns($q(function(resolve) {
       resolve([1,2,3]);
     }));
 
@@ -25,7 +25,7 @@ describe('OrdersController', function () {
   }));
 
   afterEach(function() {
-    Order.where.restore();
+    Order.findWhere.restore();
   });
 
   it('has empty orders list as initial state', function() {
@@ -49,8 +49,8 @@ describe('OrdersController', function () {
   });
 
   it('logs error message if any error occured while fetching orders', function() {
-    Order.where.restore();
-    sinon.stub(Order, 'where').returns($q(function(resolve, reject) {
+    Order.findWhere.restore();
+    sinon.stub(Order, 'findWhere').returns($q(function(resolve, reject) {
       reject();
     }));
 

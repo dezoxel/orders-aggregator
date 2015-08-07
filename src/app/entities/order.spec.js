@@ -230,7 +230,7 @@ describe('Order', function () {
     });
   });
 
-  describe('.where', function() {
+  describe('.findWhere', function() {
     function resolvePromises() {
       $rootScope.$digest();
     }
@@ -264,7 +264,7 @@ describe('Order', function () {
         });
 
         it('returns an array of Order instances', function() {
-          Order.where(week)
+          Order.findWhere(week)
             .then(function(orders) {
               expect(orders).to.be.an('array').that.have.property(1).that.is.an.instanceOf(Order);
             });
@@ -273,7 +273,7 @@ describe('Order', function () {
         });
 
         it('makes request to "/week/YYYY-MM-DD/orders" resource and use startDate', function() {
-          Order.where(week)
+          Order.findWhere(week)
             .then(function() {
               expect(backend.get).to.have.been.calledWith('/week/' + week.startDate().format('YYYY-MM-DD') + '/orders');
             });
@@ -295,7 +295,7 @@ describe('Order', function () {
         });
 
         it('returns empty array', function() {
-          Order.where(week)
+          Order.findWhere(week)
             .then(function(orders) {
               expect(orders).to.be.an('array').that.have.length(0);
             });
@@ -324,7 +324,7 @@ describe('Order', function () {
         });
 
         it('rejects promise and logs the error', function() {
-          Order.where(week)
+          Order.findWhere(week)
             .then(function() {
               expect($log.error).to.have.been.called;
             });
