@@ -45,55 +45,71 @@ describe('OrdersController', function () {
     });
   });
 
-  describe('#fetchOrders', function() {
-    var client;
-    beforeEach(function() {
-      client = new Client({
-        firstName: 'Vasya',
-        lastName: 'Pupkin'
-      });
-    });
+  var offices = [
+    {method: 'fetchOrdersOffice1', title: 'office1', key: 'ordersOffice1'},
+    {method: 'fetchOrdersOffice2', title: 'office2', key: 'ordersOffice2'}
+  ];
 
-    var order;
-    beforeEach(function() {
-      order = new Order(client);
-    });
-
-    beforeEach(function() {
-      sinon.stub(Order, 'findWhere').returns($q(function(resolve) {
-        resolve([order]);
-      }));
-    });
-
-    afterEach(function() {
-      Order.findWhere.restore();
-    });
-
-    it('returns an array of order instances', function() {
-      vm.fetchOrders()
-        .then(function() {
-          expect(vm.orders).to.be.an('array').that.have.property(0).that.is.an.instanceOf(Order);
+  offices.forEach(function(office) {
+    describe('#' + office.method , function() {
+      var client;
+      beforeEach(function() {
+        client = new Client({
+          firstName: 'Vasya',
+          lastName: 'Pupkin'
         });
+      });
 
-      resolvePromises();
-    });
-
-    context('when error occured', function() {
+      var order;
+      beforeEach(function() {
+        order = new Order(client);
+      });
 
       beforeEach(function() {
-        Order.findWhere.restore();
-        sinon.stub(Order, 'findWhere').returns($q(function(resolve, reject) {
-          reject();
+        sinon.stub(Order, 'findWhere').returns($q(function(resolve) {
+          resolve([order]);
         }));
       });
 
-      it('logs error message if any error occured while fetching orders', function() {
-        vm.fetchOrders()
+      afterEach(function() {
+        Order.findWhere.restore();
+      });
+
+      it('calls Order.findWhere() for searching orders', function() {
+        vm[office.method]()
           .then(function() {
-            expect($log.error).to.have.been.called;
+            expect(Order.findWhere).to.have.been.called;
           });
 
         resolvePromises();
+      });
+
+      it('returns an array of order instances', function() {
+        vm[office.method]()
+          .then(function() {
+            expect(vm[office.key]).to.be.an('array').that.have.property(0).that.is.an.instanceOf(Order);
+          });
+
+        resolvePromises();
+      });
+
+      context('when error occured', function() {
+
+        beforeEach(function() {
+          Order.findWhere.restore();
+          sinon.stub(Order, 'findWhere').returns($q(function(resolve, reject) {
+            reject();
+          }));
+        });
+
+        it('logs error message if any error occured while fetching orders', function() {
+          vm[office.method]()
+            .then(function() {
+              expect($log.error).to.have.been.called;
+            });
+
+          resolvePromises();
+        });
       });
     });
   });

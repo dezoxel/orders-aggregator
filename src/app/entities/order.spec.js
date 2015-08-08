@@ -269,7 +269,7 @@ describe('Order', function () {
         });
 
         it('returns an array of Order instances', function() {
-          Order.findWhere(company, week)
+          Order.findWhere(company, week, 'office1')
             .then(function(orders) {
               expect(orders).to.be.an('array').that.have.property(1).that.is.an.instanceOf(Order);
             });
@@ -278,9 +278,9 @@ describe('Order', function () {
         });
 
         it('makes request to correct url', function() {
-          Order.findWhere(company, week)
+          Order.findWhere(company, week, 'office1')
             .then(function() {
-              var ordersUrl = '/company/1/week/' + week.startDate().format('YYYY-MM-DD') + '/orders';
+              var ordersUrl = '/company/1/office/office1/week/' + week.startDate().format('YYYY-MM-DD') + '/orders';
               expect(backend.get).to.have.been.calledWith(ordersUrl);
             });
 
@@ -301,7 +301,7 @@ describe('Order', function () {
         });
 
         it('returns empty array', function() {
-          Order.findWhere(company, week)
+          Order.findWhere(company, week, 'office1')
             .then(function(orders) {
               expect(orders).to.be.an('array').that.have.length(0);
             });
@@ -330,7 +330,7 @@ describe('Order', function () {
         });
 
         it('rejects promise and logs the error', function() {
-          Order.findWhere(company, week)
+          Order.findWhere(company, week, 'office1')
             .then(function() {
               expect($log.error).to.have.been.called;
             });

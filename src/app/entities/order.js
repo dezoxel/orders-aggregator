@@ -3,13 +3,18 @@
 
   angular
     .module('sfba.entities')
-    .factory('Order', function($log, Class, Client, orderTypes, backend) {
+    .factory('Order', function ($log, Class, Client, orderTypes, backend) {
 
       var Order = Class.create({
 
         statics: {
-          findWhere: function(company, week) {
-            var ordersUrl = '/company/' + company.id() + '/week/' + week.startDate().format('YYYY-MM-DD') + '/orders';
+          findWhere: function(company, week, officeName) {
+            var ordersUrl =
+              '/company/' + company.id() +
+              '/office/' + officeName +
+              '/week/' + week.startDate().format('YYYY-MM-DD') +
+              '/orders';
+
             return backend.get(ordersUrl)
               .then(function(orders) {
                 return Order.createCollectionFrom(orders);

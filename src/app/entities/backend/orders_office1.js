@@ -3,7 +3,7 @@
 
   angular
     .module('sfba.entities')
-    .constant('orders', [{
+    .constant('ordersOffice1', [{
       client: {
         firstName: 'Vasya',
         lastName: 'Pupkin'
