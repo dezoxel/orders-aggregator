@@ -3,7 +3,7 @@
 
   angular
     .module('sfba.entities')
-    .factory('Order', function ($log, Class, Client, orderTypes, backend) {
+    .factory('Order', function ($log, Class, Client, Week, orderTypes, backend, moment) {
 
       var Order = Class.create({
 
@@ -32,7 +32,8 @@
             return orders.map(function(order) {
               return new Order(
                 new Client(order.client),
-                order
+                order,
+                new Week({startDate: moment('YYYY-MM-DD', order.weekStartDate)})
               );
             });
           }
@@ -45,25 +46,19 @@
         _wed: null,
         _thu: null,
         _fri: null,
+        _week: null,
 
-        constructor: function(client, params) {
+        constructor: function(client, params, week) {
           params = params || {};
-
-          if (!this.isValidConstructorParams(params, client)) {
-            throw new Error('Order: constructor params is not valid');
-          }
 
           this._id = params.id;
           this.setClient(client);
+          this.setWeek(week);
           this._mon = params.mon;
           this._tue = params.tue;
           this._wed = params.wed;
           this._thu = params.thu;
           this._fri = params.fri;
-        },
-
-        isValidConstructorParams: function(params, client) {
-          return client;
         },
 
         dishsetForMon: function() {
@@ -100,8 +95,19 @@
 
         id: function() {
           return this._id;
-        }
+        },
 
+        week: function() {
+          return this._week;
+        },
+
+        setWeek: function(week) {
+          if (week && week instanceof Week) {
+            this._week = week;
+          } else {
+            throw new Error('Order: invalid argument for setWeek');
+          }
+        }
       });
 
       return Order;

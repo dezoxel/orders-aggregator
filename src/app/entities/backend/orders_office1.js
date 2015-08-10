@@ -4,6 +4,7 @@
   angular
     .module('sfba.entities')
     .constant('ordersOffice1', [{
+      weekStartDate: '2015-01-05',
       client: {
         firstName: 'Vasya',
         lastName: 'Pupkin'
@@ -12,6 +13,7 @@
       tue: 'mid_no_garnish',
       thu: 'mid'
     }, {
+      weekStartDate: '2015-01-05',
       client: {
         firstName: 'Ivan',
         lastName: 'Ivanov'

@@ -3,16 +3,18 @@ describe('Order', function () {
 
   beforeEach(module('sfba.entities'));
 
-  var Order, Client, order, orderData, anotherOrderData, client;
+  var Order, Client, Week, order, week, orderData, anotherOrderData, client;
 
-  beforeEach(inject(function(_Order_, _Client_) {
+  beforeEach(inject(function(_Order_, _Client_, _Week_) {
     Order = _Order_;
     Client = _Client_;
+    Week = _Week_;
   }));
 
   // TODO: Use Factory instead of Fixture
   beforeEach(function () {
     orderData = {
+      weekStartDate: '2015-01-05',
       client: {
         firstName: 'Vasya',
         lastName: 'Pupkin',
@@ -25,6 +27,7 @@ describe('Order', function () {
     };
 
     anotherOrderData = {
+      weekStartDate: '2015-01-05',
       client: {
         firstName: 'Ivan',
         lastName: 'Ivanov',
@@ -37,19 +40,29 @@ describe('Order', function () {
     };
   });
 
-  beforeEach(function() {
+  beforeEach('create client', function() {
     client = new Client(orderData.client);
   });
+
+  beforeEach('create week', inject(function(moment) {
+    week = new Week({
+      startDate: moment().startOf('isoWeek')
+    });
+  }));
 
   describe('#create', function() {
 
     context('given valid arguments', function() {
-      beforeEach(function() {
-        order = new Order(client, orderData);
+      beforeEach('create order', function() {
+        order = new Order(client, orderData, week);
       });
 
       it('sets Client dependency', function() {
         expect(order.client()).to.be.an.instanceOf(Client);
+      });
+
+      it('sets Week dependency', function() {
+        expect(order.week()).to.be.an.instanceOf(Week);
       });
 
       var specs = [
@@ -68,25 +81,97 @@ describe('Order', function () {
     });
 
     context('given invalid arguments', function() {
-      // try to do not deep inside, just use it :)
-      function createOrderUsing(args) {
-        var F = (Order.bind.apply(Order, args));
-        return new F();
-      }
+      context('when empty signature', function() {
+        it('throws an error', function() {
+          expect(function() {
+            new Order();
+          }).to.throw('Order: invalid argument for setClient');
+        });
+      });
+
+      context('when client is not specified', function() {
+        it('throws an error', function() {
+          expect(function() {
+            new Order(null, {}, week);
+          }).to.throw('Order: invalid argument for setClient');
+        });
+      });
+
+      context('when week is not specified', function() {
+        it('throws an error', function() {
+          expect(function() {
+            new Order(client, {});
+          }).to.throw('Order: invalid argument for setWeek');
+        });
+      });
+    });
+  });
+
+  describe('#id', function() {
+
+    context('when specified', function() {
+
+      beforeEach('order with id', function() {
+        this.order = new Order(client, {id: 123}, week);
+      });
+
+      it('returns correct ID', function() {
+        expect(this.order.id()).to.equal(123);
+      });
+    });
+
+    context('when not specified', function() {
+
+      beforeEach('order without id', function() {
+        this.order = new Order(client, {}, week);
+      });
+
+      it('returns empty ID', function() {
+        expect(this.order.id()).to.be.empty;
+      });
+    });
+  });
+
+  describe('#setClient', function() {
+    beforeEach('create new order', function() {
+      this.order = new Order(client, {}, week);
+    });
+
+    context('given valid arguments', function() {
+      beforeEach(function() {
+        this.order.setClient(new Client({
+          firstName: 'Ivan',
+          lastName: 'Ivanov'
+        }));
+      });
+
+      it('sets the new client instance', function() {
+        expect(this.order.client().fullName()).to.equal('Ivan Ivanov');
+      });
+    });
+
+    context('given invalid arguments', function() {
 
       function throwsAnException() {
         it('throws an error', function() {
-          var args = this.orderArgs;
+          var orderArgs = this.orderArgs;
+          var order = this.order;
+
           expect(function() {
-            createOrderUsing(args);
-          }).to.throw('Order: constructor params is not valid');
+            order.setClient(orderArgs);
+          }).to.throw('Order: invalid argument for setClient');
         });
       }
 
       var specs = [
-        {description: 'when empty signature', args: null},
-        {description: 'when empty params hash', args: [{}, client]},
-        {description: 'when client is not specified', args: [{mon: 'big'}]}
+        {description: 'when nothing specified', args: null},
+        {description: 'when hash specified instead of Client instance', args: {
+          firstName: 'Ivan',
+          lastName: 'Ivanov'
+        }},
+        {description: 'when number specified', args: 123},
+        {description: 'when string specified', args: 'Hello from Hack world'},
+        {description: 'when array specified', args: [1,2,3]},
       ];
 
       specs.forEach(function(spec) {
@@ -102,46 +187,18 @@ describe('Order', function () {
     });
   });
 
-  describe('#id', function() {
-
-    context('when specified', function() {
-
-      beforeEach('order with id', function() {
-        this.order = new Order(client, {id: 123});
-      });
-
-      it('returns correct ID', function() {
-        expect(this.order.id()).to.equal(123);
-      });
-    });
-
-    context('when not specified', function() {
-
-      beforeEach('order without id', function() {
-        this.order = new Order(client, {});
-      });
-
-      it('returns empty ID', function() {
-        expect(this.order.id()).to.be.empty;
-      });
-    });
-  });
-
-  describe('#setClient', function() {
+  describe('#setWeek', function() {
     beforeEach(function() {
-      this.order = new Order(client, {});
+      this.order = new Order(client, {}, week);
     });
 
     context('given valid arguments', function() {
-      beforeEach(function() {
-        this.order.setClient(new Client({
-          firstName: 'Ivan',
-          lastName: 'Ivanov'
-        }));
-      });
+      beforeEach(inject(function(moment) {
+        this.order.setWeek(new Week({startDate: moment('2015-01-05', 'YYYY-MM-DD')}));
+      }));
 
-      it('sets the new client instance', function() {
-        expect(this.order.client().fullName()).to.equal('Ivan Ivanov');
+      it('sets the new week instance', function() {
+        expect(this.order.week().startDate().format('YYYY-MM-DD')).to.equal('2015-01-05');
       });
     });
 
