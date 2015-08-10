@@ -8,10 +8,9 @@
       var Order = Class.create({
 
         statics: {
-          findWhere: function(company, week, officeName) {
+          findWhere: function(office, week) {
             var ordersUrl =
-              '/company/' + company.id() +
-              '/office/' + officeName +
+              '/office/' + office.id() +
               '/week/' + week.startDate().format('YYYY-MM-DD') +
               '/orders';
 

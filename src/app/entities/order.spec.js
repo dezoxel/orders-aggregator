@@ -314,9 +314,13 @@ describe('Order', function () {
       });
     }));
 
-    var company;
-    beforeEach('create company', inject(function(Company) {
-      company = new Company({id: 1, title: 'Cogniance'});
+    var office;
+    beforeEach('create office', inject(function(Office, Company) {
+      office = new Office({
+        id: 123,
+        company: new Company('Cogniance'),
+        title: 'Office 1'
+      });
     }));
 
     context('given valid arguments', function() {
@@ -333,7 +337,7 @@ describe('Order', function () {
         });
 
         it('returns an array of Order instances', function() {
-          Order.findWhere(company, week, 'office1')
+          Order.findWhere(office, week)
             .then(function(orders) {
               expect(orders).to.be.an('array').that.have.property(1).that.is.an.instanceOf(Order);
             });
@@ -342,9 +346,9 @@ describe('Order', function () {
         });
 
         it('makes request to correct url', function() {
-          Order.findWhere(company, week, 'office1')
+          Order.findWhere(office, week)
             .then(function() {
-              var ordersUrl = '/company/1/office/office1/week/' + week.startDate().format('YYYY-MM-DD') + '/orders';
+              var ordersUrl = '/office/123/week/' + week.startDate().format('YYYY-MM-DD') + '/orders';
               expect(backend.get).to.have.been.calledWith(ordersUrl);
             });
 
@@ -365,7 +369,7 @@ describe('Order', function () {
         });
 
         it('returns empty array', function() {
-          Order.findWhere(company, week, 'office1')
+          Order.findWhere(office, week)
             .then(function(orders) {
               expect(orders).to.be.an('array').that.have.length(0);
             });
@@ -394,7 +398,7 @@ describe('Order', function () {
         });
 
         it('rejects promise and logs the error', function() {
-          Order.findWhere(company, week, 'office1')
+          Order.findWhere(office, week)
             .then(function() {
               expect($log.error).to.have.been.called;
             });
