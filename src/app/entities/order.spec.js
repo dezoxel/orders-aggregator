@@ -3,12 +3,13 @@ describe('Order', function () {
 
   beforeEach(module('sfba.entities'));
 
-  var Order, Client, Week, order, week, orderData, anotherOrderData, client;
+  var Order, Client, Week, Office, order, week, office, orderData, anotherOrderData, client;
 
-  beforeEach(inject(function(_Order_, _Client_, _Week_) {
+  beforeEach(inject(function(_Order_, _Client_, _Week_, _Office_) {
     Order = _Order_;
     Client = _Client_;
     Week = _Week_;
+    Office = _Office_;
   }));
 
   // TODO: Use Factory instead of Fixture
@@ -20,6 +21,14 @@ describe('Order', function () {
       client: {
         firstName: 'Vasya',
         lastName: 'Pupkin',
+      },
+      office: {
+        id: 123,
+        title: 'Office 1',
+        company: {
+          id: 234,
+          title: 'Cogniance'
+        }
       },
       mon: 'big_no_salad',
       tue: 'big_no_meat',
@@ -35,6 +44,14 @@ describe('Order', function () {
       client: {
         firstName: 'Ivan',
         lastName: 'Ivanov',
+      },
+      office: {
+        id: 123,
+        title: 'Office 1',
+        company: {
+          id: 234,
+          title: 'Cogniance'
+        }
       },
       mon: 'mid_no_salad',
       tue: 'mid_no_meat',
@@ -54,6 +71,13 @@ describe('Order', function () {
     });
   }));
 
+  beforeEach('create offce', inject(function(Company) {
+    office = new Office({
+      title: 'Office 1',
+      company: new Company('Cogniance')
+    });
+  }));
+
   describe('#create', function() {
 
     context('given valid arguments', function() {
@@ -61,6 +85,7 @@ describe('Order', function () {
         var orderParams = orderData;
         orderData.client = client;
         orderData.week = week;
+        orderData.office = office;
         order = new Order(orderParams);
       });
 
@@ -70,6 +95,10 @@ describe('Order', function () {
 
       it('sets Week dependency', function() {
         expect(order.week()).to.be.an.instanceOf(Week);
+      });
+
+      it('sets Office dependency', function() {
+        expect(order.office()).to.be.an.instanceOf(Office);
       });
 
       var specs = [
@@ -99,7 +128,7 @@ describe('Order', function () {
       context('when client is not specified', function() {
         it('throws an error', function() {
           expect(function() {
-            new Order(null, {}, week);
+            new Order({week: week});
           }).to.throw('Order: constructor params is not valid');
         });
       });
@@ -107,7 +136,15 @@ describe('Order', function () {
       context('when week is not specified', function() {
         it('throws an error', function() {
           expect(function() {
-            new Order(client, {});
+            new Order({client: client});
+          }).to.throw('Order: constructor params is not valid');
+        });
+      });
+
+      context('when office is not specified', function() {
+        it('throws an error', function() {
+          expect(function() {
+            new Order({week: week, client: client});
           }).to.throw('Order: constructor params is not valid');
         });
       });
@@ -119,7 +156,7 @@ describe('Order', function () {
     context('when specified', function() {
 
       beforeEach('order with id', function() {
-        this.order = new Order({id: 123, client: client, week: week});
+        this.order = new Order({id: 123, client: client, week: week, office: office});
       });
 
       it('returns correct ID', function() {
@@ -130,7 +167,7 @@ describe('Order', function () {
     context('when not specified', function() {
 
       beforeEach('order without id', function() {
-        this.order = new Order({client: client, week: week});
+        this.order = new Order({client: client, week: week, office: office});
       });
 
       it('returns empty ID', function() {
@@ -141,7 +178,7 @@ describe('Order', function () {
 
   describe('#setClient', function() {
     beforeEach('create new order', function() {
-      this.order = new Order({client: client, week: week});
+      this.order = new Order({client: client, week: week, office: office});
     });
 
     context('given valid arguments', function() {
@@ -196,7 +233,7 @@ describe('Order', function () {
 
   describe('#setWeek', function() {
     beforeEach(function() {
-      this.order = new Order({client: client, week: week});
+      this.order = new Order({client: client, week: week, office: office});
     });
 
     context('given valid arguments', function() {
@@ -246,6 +283,57 @@ describe('Order', function () {
     });
   });
 
+  describe('#setOffice', function() {
+    beforeEach('create new order', function() {
+      this.order = new Order({client: client, week: week, office: office});
+    });
+
+    context('given valid arguments', function() {
+      beforeEach(inject(function(Company) {
+        this.order.setOffice(new Office({
+          title: 'Office 1',
+          company: new Company('Cogniance')
+        }));
+      }));
+
+      it('sets the new office instance', function() {
+        expect(this.order.office().title()).to.equal('Office 1');
+      });
+    });
+
+    context('given invalid arguments', function() {
+
+      function throwsAnException() {
+        it('throws an error', function() {
+          var orderArgs = this.orderArgs;
+          var order = this.order;
+
+          expect(function() {
+            order.setOffice(orderArgs);
+          }).to.throw('Order: invalid argument for setOffice');
+        });
+      }
+
+      var specs = [
+        {description: 'when nothing specified', args: null},
+        {description: 'when hash specified instead of Office instance', args: {title: 'Office 1'}},
+        {description: 'when number specified', args: 123},
+        {description: 'when string specified', args: 'Hello from Hack world'},
+        {description: 'when array specified', args: [1,2,3]},
+      ];
+
+      specs.forEach(function(spec) {
+
+        context(spec.description, function() {
+          beforeEach(function() {
+            this.orderArgs = spec.args;
+          });
+
+          throwsAnException();
+        });
+      });
+    });
+  });
   describe('.createCollectionFrom', function() {
 
     context('given valid arguments', function() {

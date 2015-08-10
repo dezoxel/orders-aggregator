@@ -3,7 +3,7 @@
 
   angular
     .module('sfba.entities')
-    .factory('Order', function ($log, Class, Client, Week, orderTypes, backend, moment) {
+    .factory('Order', function ($log, Class, Client, Week, Office, Company, orderTypes, backend, moment) {
 
       var Order = Class.create({
 
@@ -29,10 +29,16 @@
             }
 
             return orders.map(function(orderData) {
-
               var order = orderData;
+
               order.client = new Client(orderData.client);
+
               order.week = new Week({startDate: moment('YYYY-MM-DD', orderData.week.startDate)});
+
+              order.office = new Office({
+                company: new Company(orderData.office.company),
+                title: orderData.office.title
+              });
 
               return new Order(order);
             });
@@ -41,12 +47,13 @@
 
         _id: null,
         _client: null,
+        _week: null,
+        _office: null,
         _mon: null,
         _tue: null,
         _wed: null,
         _thu: null,
         _fri: null,
-        _week: null,
 
         constructor: function(params) {
           params = params || {};
@@ -56,8 +63,11 @@
           }
 
           this._id = params.id;
+
           this.setClient(params.client);
           this.setWeek(params.week);
+          this.setOffice(params.office);
+
           this._mon = params.mon;
           this._tue = params.tue;
           this._wed = params.wed;
@@ -66,7 +76,7 @@
         },
 
         isValidConstructorParams: function(params) {
-          return params.client && params.week;
+          return params.client && params.week && params.office;
         },
 
         dishsetForMon: function() {
@@ -109,11 +119,23 @@
           return this._week;
         },
 
+        office: function() {
+          return this._office;
+        },
+
         setWeek: function(week) {
           if (week && week instanceof Week) {
             this._week = week;
           } else {
             throw new Error('Order: invalid argument for setWeek');
+          }
+        },
+
+        setOffice: function(office) {
+          if (office && office instanceof Office) {
+            this._office = office;
+          } else {
+            throw new Error('Order: invalid argument for setOffice');
           }
         }
       });
