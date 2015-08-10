@@ -14,7 +14,9 @@ describe('Order', function () {
   // TODO: Use Factory instead of Fixture
   beforeEach(function () {
     orderData = {
-      weekStartDate: '2015-01-05',
+      week: {
+        startDate: '2015-01-05'
+      },
       client: {
         firstName: 'Vasya',
         lastName: 'Pupkin',
@@ -27,7 +29,9 @@ describe('Order', function () {
     };
 
     anotherOrderData = {
-      weekStartDate: '2015-01-05',
+      week: {
+        startDate: '2015-01-05'
+      },
       client: {
         firstName: 'Ivan',
         lastName: 'Ivanov',
@@ -46,7 +50,7 @@ describe('Order', function () {
 
   beforeEach('create week', inject(function(moment) {
     week = new Week({
-      startDate: moment().startOf('isoWeek')
+      startDate: moment('YYYY-MM-DD', orderData.week.startDate)
     });
   }));
 
@@ -54,7 +58,10 @@ describe('Order', function () {
 
     context('given valid arguments', function() {
       beforeEach('create order', function() {
-        order = new Order(client, orderData, week);
+        var orderParams = orderData;
+        orderData.client = client;
+        orderData.week = week;
+        order = new Order(orderParams);
       });
 
       it('sets Client dependency', function() {
@@ -85,7 +92,7 @@ describe('Order', function () {
         it('throws an error', function() {
           expect(function() {
             new Order();
-          }).to.throw('Order: invalid argument for setClient');
+          }).to.throw('Order: constructor params is not valid');
         });
       });
 
@@ -93,7 +100,7 @@ describe('Order', function () {
         it('throws an error', function() {
           expect(function() {
             new Order(null, {}, week);
-          }).to.throw('Order: invalid argument for setClient');
+          }).to.throw('Order: constructor params is not valid');
         });
       });
 
@@ -101,7 +108,7 @@ describe('Order', function () {
         it('throws an error', function() {
           expect(function() {
             new Order(client, {});
-          }).to.throw('Order: invalid argument for setWeek');
+          }).to.throw('Order: constructor params is not valid');
         });
       });
     });
@@ -112,7 +119,7 @@ describe('Order', function () {
     context('when specified', function() {
 
       beforeEach('order with id', function() {
-        this.order = new Order(client, {id: 123}, week);
+        this.order = new Order({id: 123, client: client, week: week});
       });
 
       it('returns correct ID', function() {
@@ -123,7 +130,7 @@ describe('Order', function () {
     context('when not specified', function() {
 
       beforeEach('order without id', function() {
-        this.order = new Order(client, {}, week);
+        this.order = new Order({client: client, week: week});
       });
 
       it('returns empty ID', function() {
@@ -134,7 +141,7 @@ describe('Order', function () {
 
   describe('#setClient', function() {
     beforeEach('create new order', function() {
-      this.order = new Order(client, {}, week);
+      this.order = new Order({client: client, week: week});
     });
 
     context('given valid arguments', function() {
@@ -189,16 +196,16 @@ describe('Order', function () {
 
   describe('#setWeek', function() {
     beforeEach(function() {
-      this.order = new Order(client, {}, week);
+      this.order = new Order({client: client, week: week});
     });
 
     context('given valid arguments', function() {
       beforeEach(inject(function(moment) {
-        this.order.setWeek(new Week({startDate: moment('2015-01-05', 'YYYY-MM-DD')}));
+        this.order.setWeek(new Week({startDate: moment('2015-01-12', 'YYYY-MM-DD')}));
       }));
 
       it('sets the new week instance', function() {
-        expect(this.order.week().startDate().format('YYYY-MM-DD')).to.equal('2015-01-05');
+        expect(this.order.week().startDate().format('YYYY-MM-DD')).to.equal('2015-01-12');
       });
     });
 

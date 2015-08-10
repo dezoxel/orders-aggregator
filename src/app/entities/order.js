@@ -29,12 +29,13 @@
               return [];
             }
 
-            return orders.map(function(order) {
-              return new Order(
-                new Client(order.client),
-                order,
-                new Week({startDate: moment('YYYY-MM-DD', order.weekStartDate)})
-              );
+            return orders.map(function(orderData) {
+
+              var order = orderData;
+              order.client = new Client(orderData.client);
+              order.week = new Week({startDate: moment('YYYY-MM-DD', orderData.week.startDate)});
+
+              return new Order(order);
             });
           }
         },
@@ -48,17 +49,25 @@
         _fri: null,
         _week: null,
 
-        constructor: function(client, params, week) {
+        constructor: function(params) {
           params = params || {};
 
+          if (!this.isValidConstructorParams(params)) {
+            throw new Error('Order: constructor params is not valid');
+          }
+
           this._id = params.id;
-          this.setClient(client);
-          this.setWeek(week);
+          this.setClient(params.client);
+          this.setWeek(params.week);
           this._mon = params.mon;
           this._tue = params.tue;
           this._wed = params.wed;
           this._thu = params.thu;
           this._fri = params.fri;
+        },
+
+        isValidConstructorParams: function(params) {
+          return params.client && params.week;
         },
 
         dishsetForMon: function() {
