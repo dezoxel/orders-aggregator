@@ -5,7 +5,7 @@
     .module('sfba.entities')
     .factory('Week', Week);
 
-    function Week(Class, $q, Order, moment) {
+    function Week(Class, $q, moment) {
 
       return Class.create({
 
