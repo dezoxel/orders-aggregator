@@ -3,7 +3,9 @@ describe('Order', function () {
 
   beforeEach(module('sfba.entities'));
 
-  var Order, Client, Week, Office, order, week, office, orderData, anotherOrderData, client;
+  var Order, Client, Week, Office;
+  var order, client, week, office;
+  var orderData, anotherOrderData, officeData, weekData;
 
   beforeEach(inject(function(_Order_, _Client_, _Week_, _Office_) {
     Order = _Order_;
@@ -14,21 +16,11 @@ describe('Order', function () {
 
   // TODO: Use Factory instead of Fixture
   beforeEach(function () {
+
     orderData = {
-      week: {
-        startDate: '2015-01-05'
-      },
       client: {
         firstName: 'Vasya',
         lastName: 'Pupkin',
-      },
-      office: {
-        id: 123,
-        title: 'Office 1',
-        company: {
-          id: 234,
-          title: 'Cogniance'
-        }
       },
       mon: 'big_no_salad',
       tue: 'big_no_meat',
@@ -38,20 +30,9 @@ describe('Order', function () {
     };
 
     anotherOrderData = {
-      week: {
-        startDate: '2015-01-05'
-      },
       client: {
         firstName: 'Ivan',
         lastName: 'Ivanov',
-      },
-      office: {
-        id: 123,
-        title: 'Office 1',
-        company: {
-          id: 234,
-          title: 'Cogniance'
-        }
       },
       mon: 'mid_no_salad',
       tue: 'mid_no_meat',
@@ -61,20 +42,36 @@ describe('Order', function () {
     };
   });
 
+  beforeEach(function() {
+    officeData = {
+      id: 123,
+      title: 'Office 1',
+      company: {
+        title: 'Cogniance'
+      }
+    };
+  });
+
+  beforeEach(function() {
+    weekData = {startDate: '2015-01-05'};
+  });
+
   beforeEach('create client', function() {
     client = new Client(orderData.client);
   });
 
   beforeEach('create week', inject(function(moment) {
+    console.log(weekData);
     week = new Week({
-      startDate: moment('YYYY-MM-DD', orderData.week.startDate)
+      startDate: moment(weekData.startDate, 'YYYY-MM-DD')
     });
   }));
 
   beforeEach('create offce', inject(function(Company) {
     office = new Office({
-      title: 'Office 1',
-      company: new Company('Cogniance')
+      id: officeData.id,
+      title: officeData.title,
+      company: new Company(officeData.company.title)
     });
   }));
 
@@ -83,9 +80,9 @@ describe('Order', function () {
     context('given valid arguments', function() {
       beforeEach('create order', function() {
         var orderParams = orderData;
-        orderData.client = client;
-        orderData.week = week;
-        orderData.office = office;
+        orderParams.client = client;
+        orderParams.week = week;
+        orderParams.office = office;
         order = new Order(orderParams);
       });
 
@@ -128,7 +125,7 @@ describe('Order', function () {
       context('when client is not specified', function() {
         it('throws an error', function() {
           expect(function() {
-            new Order({week: week});
+            new Order({week: week, office: office});
           }).to.throw('Order: constructor params is not valid');
         });
       });
@@ -136,7 +133,7 @@ describe('Order', function () {
       context('when week is not specified', function() {
         it('throws an error', function() {
           expect(function() {
-            new Order({client: client});
+            new Order({client: client, office: office});
           }).to.throw('Order: constructor params is not valid');
         });
       });
@@ -254,17 +251,14 @@ describe('Order', function () {
           var order = this.order;
 
           expect(function() {
-            order.setClient(orderArgs);
-          }).to.throw('Order: invalid argument for setClient');
+            order.setWeek(orderArgs);
+          }).to.throw('Order: invalid argument for setWeek');
         });
       }
 
       var specs = [
         {description: 'when nothing specified', args: null},
-        {description: 'when hash specified instead of Client instance', args: {
-          firstName: 'Ivan',
-          lastName: 'Ivanov'
-        }},
+        {description: 'when hash specified instead of Week instance', args: {startDate: '2015-05-12'}},
         {description: 'when number specified', args: 123},
         {description: 'when string specified', args: 'Hello from Hack world'},
         {description: 'when array specified', args: [1,2,3]},
@@ -291,13 +285,13 @@ describe('Order', function () {
     context('given valid arguments', function() {
       beforeEach(inject(function(Company) {
         this.order.setOffice(new Office({
-          title: 'Office 1',
-          company: new Company('Cogniance')
+          title: 'Office 2',
+          company: new Company('Google')
         }));
       }));
 
       it('sets the new office instance', function() {
-        expect(this.order.office().title()).to.equal('Office 1');
+        expect(this.order.office().title()).to.equal('Office 2');
       });
     });
 
@@ -338,7 +332,11 @@ describe('Order', function () {
 
     context('given valid arguments', function() {
       beforeEach(function() {
-        this.collection = Order.createCollectionFrom([orderData, anotherOrderData]);
+        this.collection = Order.createCollectionFrom({
+          office: officeData,
+          week: weekData,
+          list: [orderData, anotherOrderData]
+        });
       });
 
       it('returns an array of Order instances', function() {
@@ -347,16 +345,19 @@ describe('Order', function () {
     });
 
     context('given invalid arguments', function() {
-      function returnsEmptyArray() {
-        it('returns empty array', function() {
-          expect(this.collection).to.be.empty;
+
+      function throwsAnException() {
+        it('throws an error', function() {
+          var args = this.args;
+          expect(function() {
+            this.collection = Order.createCollectionFrom(args);
+          }).to.throw('Order: invalid orders data format specified');
         });
       }
 
       var specs = [
         {description: 'nothing', args: null},
-        {description: 'empty array', args: []},
-        {description: 'object', args: {hello: 'world'}},
+        {description: 'array', args: [1, 2, 3]},
         {description: 'string', args: 'hello'},
         {description: 'number', args: 123},
         {description: 'boolean', args: true}
@@ -365,20 +366,37 @@ describe('Order', function () {
       specs.forEach(function(spec) {
         context('when ' + spec.description + ' specified', function() {
           beforeEach(function() {
-            this.collection = Order.createCollectionFrom(spec.args);
+            this.args = spec.args;
           });
 
-          returnsEmptyArray();
+          throwsAnException();
         });
       });
 
       context('client is not specified in the data structure', function() {
         it('throws an error', function() {
           expect(function() {
-            Order.createCollectionFrom([{}]);
-          }).to.throw;
+            Order.createCollectionFrom({office: officeData, week: weekData, list: [{}]});
+          }).to.throw('Client: constructor params is not valid');
         });
       });
+
+      context('office is not specified in the data structure', function() {
+        it('throws an error', function() {
+          expect(function() {
+            Order.createCollectionFrom({week: weekData, list: [{client: orderData.client}]});
+          }).to.throw('Order: invalid orders data format specified');
+        });
+      });
+
+      context('week is not specified in the data structure', function() {
+        it('throws an error', function() {
+          expect(function() {
+            Order.createCollectionFrom({office: officeData, list: [{client: orderData.client}]});
+          }).to.throw('Order: invalid orders data format specified');
+        });
+      });
+
     });
   });
 
@@ -395,28 +413,16 @@ describe('Order', function () {
       backend = _backend_;
     }));
 
-    var week;
-    beforeEach('create week', inject(function(Week, moment) {
-      week = new Week({
-        startDate: moment().startOf('isoWeek')
-      });
-    }));
-
-    var office;
-    beforeEach('create office', inject(function(Office, Company) {
-      office = new Office({
-        id: 123,
-        company: new Company('Cogniance'),
-        title: 'Office 1'
-      });
-    }));
-
     context('given valid arguments', function() {
 
       context('when found', function() {
         beforeEach('stub network activity', function() {
           sinon.stub(backend, 'get').returns($q(function(resolve) {
-            resolve([orderData, anotherOrderData]);
+            resolve({
+              office: officeData,
+              week: weekData,
+              list: [orderData, anotherOrderData]
+            });
           }));
         });
 
@@ -436,7 +442,7 @@ describe('Order', function () {
         it('makes request to correct url', function() {
           Order.findWhere(office, week)
             .then(function() {
-              var ordersUrl = '/office/123/week/' + week.startDate().format('YYYY-MM-DD') + '/orders';
+              var ordersUrl = '/office/123/week/2015-01-05/orders';
               expect(backend.get).to.have.been.calledWith(ordersUrl);
             });
 
@@ -448,7 +454,11 @@ describe('Order', function () {
       context('when not found', function() {
         beforeEach('stub network activity', function() {
           sinon.stub(backend, 'get').returns($q(function(resolve) {
-            resolve([]);
+            resolve({
+              office: officeData,
+              week: weekData,
+              list: []
+            });
           }));
         });
 

@@ -23,21 +23,22 @@
               });
           },
 
-          createCollectionFrom: function(orders) {
-            if (!orders || !(orders instanceof Array)) {
-              return [];
+          createCollectionFrom: function(ordersData) {
+
+            if (!ordersData || !ordersData.office || !ordersData.week || !(ordersData.list instanceof Array)) {
+              throw new Error('Order: invalid orders data format specified');
             }
 
-            return orders.map(function(orderData) {
-              var order = orderData;
+            return ordersData.list.map(function(orderItemData) {
+              var order = orderItemData;
 
-              order.client = new Client(orderData.client);
+              order.client = new Client(orderItemData.client);
 
-              order.week = new Week({startDate: moment('YYYY-MM-DD', orderData.week.startDate)});
+              order.week = new Week({startDate: moment('YYYY-MM-DD', ordersData.week.startDate)});
 
               order.office = new Office({
-                company: new Company(orderData.office.company),
-                title: orderData.office.title
+                company: new Company(ordersData.office.company),
+                title: ordersData.office.title
               });
 
               return new Order(order);
