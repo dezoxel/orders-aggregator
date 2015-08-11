@@ -78,24 +78,8 @@
           return params.client && params.week && params.office;
         },
 
-        dishsetForMon: function() {
-          return orderTypes.displayNameFor(this._dishSet.mon);
-        },
-
-        dishsetForTue: function() {
-          return orderTypes.displayNameFor(this._dishSet.tue);
-        },
-
-        dishsetForWed: function() {
-          return orderTypes.displayNameFor(this._dishSet.wed);
-        },
-
-        dishsetForThu: function() {
-          return orderTypes.displayNameFor(this._dishSet.thu);
-        },
-
-        dishsetForFri: function() {
-          return orderTypes.displayNameFor(this._dishSet.fri);
+        dishsetFor: function(weekday) {
+          return orderTypes.displayNameFor(this._dishSet[weekday]);
         },
 
         setClient: function(client) {

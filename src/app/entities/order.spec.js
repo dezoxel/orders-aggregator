@@ -102,16 +102,16 @@ describe('Order', function () {
       });
 
       var specs = [
-        {weekday: 'Mon', getter: 'dishsetForMon', expected: 'Большая без салата'},
-        {weekday: 'Tue', getter: 'dishsetForTue', expected: 'Большая без мяса'},
-        {weekday: 'Wed', getter: 'dishsetForWed', expected: 'Большая'},
-        {weekday: 'Thu', getter: 'dishsetForThu', expected: 'Средняя без мяса'},
-        {weekday: 'Fri', getter: 'dishsetForFri', expected: 'Средняя без салата'}
+        {weekday: 'mon', expected: 'Большая без салата'},
+        {weekday: 'tue', expected: 'Большая без мяса'},
+        {weekday: 'wed', expected: 'Большая'},
+        {weekday: 'thu', expected: 'Средняя без мяса'},
+        {weekday: 'fri', expected: 'Средняя без салата'},
       ];
 
       specs.forEach(function(spec) {
         it('sets order for the ' + spec.weekday, function() {
-          expect(order[spec.getter]()).to.equal(spec.expected);
+          expect(order.dishsetFor(spec.weekday)).to.equal(spec.expected);
         });
       });
     });
