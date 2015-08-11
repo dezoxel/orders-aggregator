@@ -331,6 +331,64 @@ describe('Order', function () {
       });
     });
   });
+
+  describe('#setDishsetFor', function() {
+    beforeEach('create new order', function() {
+      this.order = new Order({client: client, week: week, office: office});
+    });
+
+    context('given valid arguments', function() {
+      beforeEach(function() {
+        this.order.setDishsetFor('thu', 'big_no_meat');
+      });
+
+      it('sets the new desired dishset for the specified week day', function() {
+        expect(this.order.dishsetFor('thu')).to.equal('Большая без мяса');
+      });
+    });
+
+    context('given invalid arguments', function() {
+
+      function throwsAnException() {
+        it('throws an error', function() {
+          var orderArgs = this.orderArgs;
+          var order = this.order;
+
+          expect(function() {
+            order.setDishsetFor('tue', orderArgs);
+          }).to.throw('Order: invalid argument for setDishsetFor');
+        });
+      }
+
+      var specs = [
+        {description: 'when nothing specified', args: null},
+        {description: 'when hash specified instead of Office instance', args: {title: 'Office 1'}},
+        {description: 'when number specified', args: 123},
+        {description: 'when array specified', args: [1,2,3]},
+        {description: 'when non existing dishset specified', args: 'super_big'},
+      ];
+
+      specs.forEach(function(spec) {
+
+        context(spec.description, function() {
+          beforeEach(function() {
+            this.orderArgs = spec.args;
+          });
+
+          throwsAnException();
+        });
+      });
+
+      context('when non existing weekday specified', function() {
+        it('throws an error', function() {
+          expect(function() {
+            order.setDishsetFor('tuesday', 'big');
+          }).to.throw('Order: invalid argument for setDishsetFor');
+        });
+      });
+    });
+  });
+
   describe('.createCollectionFrom', function() {
 
     context('given valid arguments', function() {

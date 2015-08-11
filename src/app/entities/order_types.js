@@ -23,5 +23,9 @@
         return typesMap[orderType];
       };
 
+      this.availableDishsets = function() {
+        return Object.keys(typesMap);
+      };
+
     });
 })(angular);

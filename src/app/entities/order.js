@@ -57,6 +57,7 @@
           thu: null,
           fri: null,
         },
+        _weekdays: ['mon', 'tue', 'wed', 'thu', 'fri'],
 
         constructor: function(params) {
           params = params || {};
@@ -71,7 +72,7 @@
           this.setWeek(params.week);
           this.setOffice(params.office);
 
-          this._dishSet = params.dishSet;
+          this._dishSet = params.dishSet || this._dishSet;
         },
 
         isValidConstructorParams: function(params) {
@@ -79,7 +80,23 @@
         },
 
         dishsetFor: function(weekday) {
-          return orderTypes.displayNameFor(this._dishSet[weekday]);
+          return this._isValidWeekday(weekday) ? orderTypes.displayNameFor(this._dishSet[weekday]) : '';
+        },
+
+        setDishsetFor: function(weekday, dishset) {
+          if (this._isValidWeekday(weekday) && this._isValidDishset(dishset)) {
+            this._dishSet[weekday] = dishset;
+          } else {
+            throw new Error('Order: invalid argument for setDishsetFor');
+          }
+        },
+
+        _isValidWeekday: function(weekday) {
+          return typeof weekday === 'string' && this._weekdays.indexOf(weekday) !== -1;
+        },
+
+        _isValidDishset: function(dishset) {
+          return typeof dishset === 'string' && orderTypes.availableDishsets().indexOf(dishset) !== -1;
         },
 
         setClient: function(client) {
