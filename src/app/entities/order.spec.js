@@ -22,11 +22,13 @@ describe('Order', function () {
         firstName: 'Vasya',
         lastName: 'Pupkin',
       },
-      mon: 'big_no_salad',
-      tue: 'big_no_meat',
-      wed: 'big',
-      thu: 'mid_no_meat',
-      fri: 'mid_no_salad'
+      dishSet: {
+        mon: 'big_no_salad',
+        tue: 'big_no_meat',
+        wed: 'big',
+        thu: 'mid_no_meat',
+        fri: 'mid_no_salad'
+      }
     };
 
     anotherOrderData = {
@@ -34,11 +36,13 @@ describe('Order', function () {
         firstName: 'Ivan',
         lastName: 'Ivanov',
       },
-      mon: 'mid_no_salad',
-      tue: 'mid_no_meat',
-      wed: 'mid',
-      thu: 'big_no_meat',
-      fri: 'big_no_salad'
+      dishSet: {
+        mon: 'mid_no_salad',
+        tue: 'mid_no_meat',
+        wed: 'mid',
+        thu: 'big_no_meat',
+        fri: 'big_no_salad'
+      }
     };
   });
 
@@ -61,7 +65,6 @@ describe('Order', function () {
   });
 
   beforeEach('create week', inject(function(moment) {
-    console.log(weekData);
     week = new Week({
       startDate: moment(weekData.startDate, 'YYYY-MM-DD')
     });

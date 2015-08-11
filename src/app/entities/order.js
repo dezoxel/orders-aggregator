@@ -34,7 +34,7 @@
 
               order.client = new Client(orderItemData.client);
 
-              order.week = new Week({startDate: moment('YYYY-MM-DD', ordersData.week.startDate)});
+              order.week = new Week({startDate: moment(ordersData.week.startDate, 'YYYY-MM-DD')});
 
               order.office = new Office({
                 company: new Company(ordersData.office.company),
@@ -50,11 +50,13 @@
         _client: null,
         _week: null,
         _office: null,
-        _mon: null,
-        _tue: null,
-        _wed: null,
-        _thu: null,
-        _fri: null,
+        _dishSet: {
+          mon: null,
+          tue: null,
+          wed: null,
+          thu: null,
+          fri: null,
+        },
 
         constructor: function(params) {
           params = params || {};
@@ -69,11 +71,7 @@
           this.setWeek(params.week);
           this.setOffice(params.office);
 
-          this._mon = params.mon;
-          this._tue = params.tue;
-          this._wed = params.wed;
-          this._thu = params.thu;
-          this._fri = params.fri;
+          this._dishSet = params.dishSet;
         },
 
         isValidConstructorParams: function(params) {
@@ -81,23 +79,23 @@
         },
 
         dishsetForMon: function() {
-          return orderTypes.displayNameFor(this._mon);
+          return orderTypes.displayNameFor(this._dishSet.mon);
         },
 
         dishsetForTue: function() {
-          return orderTypes.displayNameFor(this._tue);
+          return orderTypes.displayNameFor(this._dishSet.tue);
         },
 
         dishsetForWed: function() {
-          return orderTypes.displayNameFor(this._wed);
+          return orderTypes.displayNameFor(this._dishSet.wed);
         },
 
         dishsetForThu: function() {
-          return orderTypes.displayNameFor(this._thu);
+          return orderTypes.displayNameFor(this._dishSet.thu);
         },
 
         dishsetForFri: function() {
-          return orderTypes.displayNameFor(this._fri);
+          return orderTypes.displayNameFor(this._dishSet.fri);
         },
 
         setClient: function(client) {
