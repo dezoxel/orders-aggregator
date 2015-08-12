@@ -102,11 +102,11 @@ describe('Order', function () {
       });
 
       var specs = [
-        {weekday: 'mon', expected: 'Большая без салата'},
-        {weekday: 'tue', expected: 'Большая без мяса'},
-        {weekday: 'wed', expected: 'Большая'},
-        {weekday: 'thu', expected: 'Средняя без мяса'},
-        {weekday: 'fri', expected: 'Средняя без салата'},
+        {weekday: 'mon', expected: 'Big, no salad'},
+        {weekday: 'tue', expected: 'Big, no meat'},
+        {weekday: 'wed', expected: 'Big'},
+        {weekday: 'thu', expected: 'Medium, no meat'},
+        {weekday: 'fri', expected: 'Medium, no salad'},
       ];
 
       specs.forEach(function(spec) {
@@ -343,7 +343,7 @@ describe('Order', function () {
       });
 
       it('sets the new desired dishset for the specified week day', function() {
-        expect(this.order.dishsetFor('thu')).to.equal('Большая без мяса');
+        expect(this.order.dishsetFor('thu')).to.equal('Big, no meat');
       });
     });
 

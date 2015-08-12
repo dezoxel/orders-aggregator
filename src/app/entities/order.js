@@ -3,7 +3,7 @@
 
   angular
     .module('sfba.entities')
-    .factory('Order', function ($log, Class, Client, Week, Office, Company, orderTypes, backend, moment) {
+    .factory('Order', function ($log, Class, Client, Week, Office, Company, dishSets, backend, moment) {
 
       var Order = Class.create({
 
@@ -84,12 +84,12 @@
         },
 
         dishsetFor: function(weekday) {
-          return this._isValidWeekday(weekday) ? orderTypes.displayNameFor(this._dishSet[weekday]) : '';
+          return this._isValidWeekday(weekday) ? dishSets.displayNameFor(this._dishSet[weekday]) : '';
         },
 
-        setDishsetFor: function(weekday, dishset) {
-          if (this._isValidWeekday(weekday) && this._isValidDishset(dishset)) {
-            this._dishSet[weekday] = dishset;
+        setDishsetFor: function(weekday, dishSet) {
+          if (this._isValidWeekday(weekday) && dishSets.isValid(dishSet)) {
+            this._dishSet[weekday] = dishSet;
           } else {
             throw new Error('Order: invalid argument for setDishsetFor');
           }
@@ -97,10 +97,6 @@
 
         _isValidWeekday: function(weekday) {
           return typeof weekday === 'string' && this._weekdays.indexOf(weekday) !== -1;
-        },
-
-        _isValidDishset: function(dishset) {
-          return typeof dishset === 'string' && orderTypes.availableDishsets().indexOf(dishset) !== -1;
         },
 
         setClient: function(client) {
