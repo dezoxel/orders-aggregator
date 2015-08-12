@@ -128,6 +128,15 @@ describe('Office', function() {
 
           resolvePromises();
         });
+
+        it('office instance should have an ID', function() {
+          Office.find(123)
+            .then(function(office) {
+              expect(office.id()).to.equal(123);
+            });
+
+          resolvePromises();
+        });
       });
 
       context('when not found', function() {

@@ -17,9 +17,10 @@
 
             return backend.get('/office/' + id)
               .then(function(officeData) {
-                 return new Office({
-                  company: new Company(officeData.company),
-                  title: officeData.title
+                return new Office({
+                  id: officeData.id,
+                  title: officeData.title,
+                  company: new Company(officeData.company)
                 });
               })
               .catch(function() {
