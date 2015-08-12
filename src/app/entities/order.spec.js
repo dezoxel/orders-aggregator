@@ -566,5 +566,47 @@ describe('Order', function () {
         });
       });
     });
+
+    context('given invalid arguments', function() {
+      context('when arguments are not specified', function() {
+        it('throws an error', function() {
+          expect(function() {
+            Order.findWhere();
+          }).to.throw('Order: invalid arguments for findWhere');
+        });
+      });
+
+      context('when week is not specified', function() {
+        it('throws an error', function() {
+          expect(function() {
+            Order.findWhere(office);
+          }).to.throw('Order: invalid arguments for findWhere');
+        });
+      });
+
+      context('when office is not specified', function() {
+        it('throws an error', function() {
+          expect(function() {
+            Order.findWhere(null, week);
+          }).to.throw('Order: invalid arguments for findWhere');
+        });
+      });
+
+      context('when office is not an instance of Office', function() {
+        it('throws an error', function() {
+          expect(function() {
+            Order.findWhere(new (function() {})(), week);
+          }).to.throw('Order: invalid arguments for findWhere');
+        });
+      });
+
+      context('when week is not an instance of Week', function() {
+        it('throws an error', function() {
+          expect(function() {
+            Order.findWhere(office, new (function() {})());
+          }).to.throw('Order: invalid arguments for findWhere');
+        });
+      });
+    });
   });
 });

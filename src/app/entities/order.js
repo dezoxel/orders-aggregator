@@ -9,6 +9,10 @@
 
         statics: {
           findWhere: function(office, week) {
+            if (!office || !week || !(office instanceof Office) || !(week instanceof Week)) {
+              throw new Error('Order: invalid arguments for findWhere');
+            }
+
             var ordersUrl =
               '/office/' + office.id() +
               '/week/' + week.startDate().format('YYYY-MM-DD') +
