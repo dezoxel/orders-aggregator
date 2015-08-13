@@ -1,5 +1,5 @@
 <td><input type="text" class="form-control input-sm" placeholder="Your Name" autofocus ng-model="vm.clientFullName" /></td>
-<td ng-repeat="weekday in vmweekdays">
+<td ng-repeat="weekday in vm.weekdays">
   <select
     ng-options="dishSet.id as dishSet.title for dishSet in vm.dishSets"
     ng-model="vm.selectedDishSets[weekday]"
