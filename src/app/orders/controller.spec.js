@@ -7,13 +7,14 @@ describe('OrdersController', function () {
 
   beforeEach(module('sfba.orders'));
 
-  var $rootScope, $q, Week, Order, Client, Company;
-  beforeEach('reassign injected services', inject(function (_$rootScope_, _$q_, _Week_, _Order_, _Client_, _Company_) {
+  var $rootScope, $q, $controller, vm, Week, Office, Company, moment;
+  beforeEach('reassign injected services', inject(function(_$rootScope_, _$q_, _$controller_, _Week_, _Office_, _Company_, _moment_) {
     $rootScope = _$rootScope_;
     $q = _$q_;
+    $controller = _$controller_;
     Week = _Week_;
-    Order = _Order_;
-    Client = _Client_;
+    Office = _Office_;
+    moment = _moment_;
     Company = _Company_;
   }));
 
@@ -22,140 +23,100 @@ describe('OrdersController', function () {
     $log = {error: sinon.stub()};
   });
 
-  var vm;
-  beforeEach('create controller', inject(function($controller, moment) {
-    vm = $controller('OrdersController', {Week: Week, moment: moment, $log: $log});
-  }));
+  var office;
+  beforeEach('create office', function() {
+    office = new Office({
+      id: 1,
+      title: 'Office 1',
+      company: new Company('Cogniance')
+    });
+  });
 
-  describe('#defineInitialState', function() {
+  describe('#init', function() {
 
-    it('has empty orders list', function() {
-      expect(vm.orders).to.be.empty;
+    context('given valid arguments', function() {
+      beforeEach('stub Office.findByCompany', function() {
+        sinon.stub(Office, 'findByCompany').returns($q(function(resolve) {
+          resolve([office]);
+        }));
+      });
+
+      afterEach('unstub Office.findByCompany', function() {
+        Office.findByCompany.restore();
+      });
+
+      beforeEach('create valid controller', function() {
+        vm = $controller('OrdersController', {$log: $log, $q: $q, Week: Week, Office: Office, moment: moment, companyId: 1});
+      });
+
+      it('defines initial state', function() {
+        sinon.stub(vm, 'defineInitialState');
+
+        vm.init();
+        expect(vm.defineInitialState).to.have.been.called;
+
+        vm.defineInitialState.restore();
+      });
+
+      context('fetch list of offices', function() {
+        context('when found', function() {
+
+          it('calls findByCompany', function() {
+            expect(Office.findByCompany).to.have.been.calledWith(1);
+          });
+
+          it('stores offices to controller property', function() {
+            resolvePromises();
+
+            expect(vm.offices).to.be.an('array').with.length(1).that.have.property(0).that.is.an.instanceOf(Office);
+          });
+        });
+
+        context('when error occured', function() {
+          beforeEach('restub Office.findByCompany', function() {
+            Office.findByCompany.restore();
+            sinon.stub(Office, 'findByCompany').returns($q(function(resolve, reject) {
+              reject('Error');
+            }));
+          });
+
+          it('logs the error', function() {
+            // need to call it again, because restub was executed after controller created
+            vm.init();
+
+            resolvePromises();
+
+            expect($log.error).to.have.been.called;
+          });
+        });
+      });
     });
 
-    it('uses current week', function() {
+    context('given invalid arguments', function() {
+      context('company ID is not number', function() {
+        it('throws an exception', function() {
+          expect(function() {
+            vm = $controller('OrdersController', {$log: $log, $q: $q, Week: Week, Office: Office, moment: moment, companyId: 'hello'});
+          }).to.throw(Error);
+        });
+      });
+    });
+  });
+
+  describe('#defineInitialState', function() {
+    beforeEach('create valid controller', function() {
+      vm = $controller('OrdersController', {$log: $log, $q: $q, Week: Week, Office: Office, moment: moment, companyId: 1});
+    });
+
+    it('has empty offices list', function() {
+      expect(vm.offices).to.be.empty;
+    });
+
+    it('creates the current week instance', function() {
       var begin = vm.week.startDate();
       var end = vm.week.endDate().clone().add(1, 'day'); // because moment.isBetween() is exclusive
 
       expect(moment().isBetween(begin, end)).to.be.true;
-    });
-
-    it('has no company assigned', function() {
-      expect(vm.company).to.be.null;
-    });
-  });
-
-  var offices = [
-    {method: 'fetchOrdersOffice1', title: 'office1', key: 'ordersOffice1'},
-    {method: 'fetchOrdersOffice2', title: 'office2', key: 'ordersOffice2'}
-  ];
-
-  offices.forEach(function(office) {
-    describe('#' + office.method , function() {
-      var client;
-      beforeEach(function() {
-        client = new Client({
-          firstName: 'Vasya',
-          lastName: 'Pupkin'
-        });
-      });
-
-      var order;
-      beforeEach(function() {
-        order = new Order(client);
-      });
-
-      beforeEach(function() {
-        sinon.stub(Order, 'findWhere').returns($q(function(resolve) {
-          resolve([order]);
-        }));
-      });
-
-      afterEach(function() {
-        Order.findWhere.restore();
-      });
-
-      it('calls Order.findWhere() for searching orders', function() {
-        vm[office.method]()
-          .then(function() {
-            expect(Order.findWhere).to.have.been.called;
-          });
-
-        resolvePromises();
-      });
-
-      it('returns an array of order instances', function() {
-        vm[office.method]()
-          .then(function() {
-            expect(vm[office.key]).to.be.an('array').that.have.property(0).that.is.an.instanceOf(Order);
-          });
-
-        resolvePromises();
-      });
-
-      context('when error occured', function() {
-
-        beforeEach(function() {
-          Order.findWhere.restore();
-          sinon.stub(Order, 'findWhere').returns($q(function(resolve, reject) {
-            reject();
-          }));
-        });
-
-        it('logs error message if any error occured while fetching orders', function() {
-          vm[office.method]()
-            .then(function() {
-              expect($log.error).to.have.been.called;
-            });
-
-          resolvePromises();
-        });
-      });
-    });
-  });
-
-  describe('#fetchCompany', function() {
-    var company;
-    beforeEach('create company', function() {
-      company = new Company('Cogniance');
-    });
-
-    beforeEach('stub company', function() {
-      sinon.stub(Company, 'find').returns($q(function(resolve) {
-        resolve(company);
-      }));
-    });
-
-    afterEach('unstub company', function() {
-      Company.find.restore();
-    });
-
-    it('returns an instance of Company', function() {
-      vm.fetchCompany()
-        .then(function() {
-          expect(vm.company).to.be.an.instanceOf(Company);
-        });
-
-      resolvePromises();
-    });
-
-    context('when error occured', function() {
-
-      beforeEach(function() {
-        Company.find.restore();
-        sinon.stub(Company, 'find').returns($q(function(resolve, reject) {
-          reject();
-        }));
-      });
-
-      it('logs error message if any error occured while fetching orders', function() {
-        vm.fetchCompany()
-          .then(function() {
-            expect($log.error).to.have.been.called;
-          });
-
-        resolvePromises();
-      });
     });
   });
 });

@@ -3,27 +3,25 @@
 
   angular
     .module('sfba.entities')
-    .provider('backend', function(ordersOffice1, ordersOffice2, cogniance) {
-
+    .factory('backend', function($q, officesData, ordersData) {
       return {
-        $get: function($q) {
-          return {
-            get: function(url) {
-              return $q(function(resolve, reject) {
-                if (true) {
-                  if (url === '/company/1') {
-                    resolve(cogniance);
-                  } else if (url.indexOf('/company/1/office/office1/week') !== -1) {
-                    resolve(ordersOffice1);
-                  } else if (url.indexOf('/company/1/office/office2/week') !== -1) {
-                    resolve(ordersOffice2);
-                  }
-                } else {
-                  reject();
-                }
-              });
+        get: function(url) {
+          return $q(function(resolve, reject) {
+            // like a reminder that we have to implement error case
+            if (true) {
+              if (url === '/company/1/offices') {
+                resolve(officesData);
+              } else if (url.indexOf('/office/1/week') !== -1) {
+                resolve(ordersData.office1);
+              } else if (url.indexOf('/office/2/week') !== -1) {
+                resolve(ordersData.office2);
+              } else {
+                throw new Error('backend: Incorrect URL: "' + url + '"');
+              }
+            } else {
+              reject();
             }
-          };
+          });
         }
       };
     });
