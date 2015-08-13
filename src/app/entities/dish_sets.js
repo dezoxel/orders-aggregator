@@ -21,7 +21,7 @@
       };
 
       this.displayNameFor = function(dishSetId) {
-        dishSetId = dishSetId || 'none';
+        dishSetId = (!this.isValid(dishSetId)) ? 'none' : dishSetId;
 
         var dishSet = map[dishSetId];
         return dishSet.title;
@@ -31,8 +31,8 @@
         return map;
       };
 
-      this.isValid = function(dishSet) {
-        return typeof dishSet === 'string' && this.list().indexOf(dishSet) !== -1;
+      this.isValid = function(dishSetId) {
+        return typeof dishSetId === 'string' && map[dishSetId];
       };
   });
 })(angular);
