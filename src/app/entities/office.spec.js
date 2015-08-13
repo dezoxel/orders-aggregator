@@ -3,14 +3,49 @@ describe('Office', function() {
 
   beforeEach(module('sfba.entities'));
 
-  var Office, Company, company;
-  beforeEach('reassign injected services', inject(function (_Office_, _Company_) {
+  function resolvePromises() {
+    $rootScope.$digest();
+  }
+
+  var $q, $rootScope, $log, backend, Office, Company, company;
+  beforeEach('reassign injected services', inject(function (_Office_, _Company_, _$q_, _$rootScope_, _$log_, _backend_) {
     Office = _Office_;
     Company = _Company_;
+    $q = _$q_;
+    $rootScope = _$rootScope_;
+    $log = _$log_;
+    backend = _backend_;
   }));
 
+  var officeData, anotherOfficeData;
+  beforeEach(function() {
+    officeData = {
+      id: 123,
+      title: 'Office 1',
+      company: {
+        title: 'Cogniance'
+      }
+    };
+
+    anotherOfficeData = {
+      id: 234,
+      title: 'Office 2',
+      company: {
+        title: 'Cogniance'
+      }
+    };
+  });
+
+  var companyData;
+  beforeEach(function() {
+    companyData = {
+      id: 1,
+      title: 'Cogniance'
+    };
+  });
+
   beforeEach('create company', function() {
-    company = new Company('Cogniance');
+    company = new Company(companyData);
   });
 
   describe('#create', function() {
@@ -76,30 +111,7 @@ describe('Office', function() {
 
   describe('.find', function() {
 
-    function resolvePromises() {
-      $rootScope.$digest();
-    }
-
-    var $q, $rootScope, $log, backend;
-    beforeEach('reassign injected services', inject(function(_$q_, _$rootScope_, _$log_, _backend_) {
-      $q = _$q_;
-      $rootScope = _$rootScope_;
-      $log = _$log_;
-      backend = _backend_;
-    }));
-
     context('given valid arguments', function() {
-      var officeData;
-      beforeEach('valid office data', function() {
-        officeData = {
-          company: {
-            title: 'Cogniance'
-          },
-          title: 'Office 1',
-          id: 123
-        };
-      });
-
       context('when found', function() {
         beforeEach('stub network activity', function() {
           sinon.stub(backend, 'get').returns($q(function(resolve) {
@@ -265,7 +277,7 @@ describe('Office', function() {
 
           expect(function() {
             office.setCompany(companyArgs);
-          }).to.throw('Order: invalid argument for setCompany');
+          }).to.throw('Office: invalid argument for setCompany');
         });
       }
 
@@ -290,4 +302,186 @@ describe('Office', function() {
     });
   });
 
+  describe('.createCollectionFrom', function() {
+
+    context('given valid arguments', function() {
+      beforeEach(function() {
+        this.collection = Office.createCollectionFrom({
+          company: companyData,
+          list: [officeData, anotherOfficeData]
+        });
+      });
+
+      it('returns an array of Office instances', function() {
+        expect(this.collection).to.be.an('array').that.have.property(0).that.is.instanceOf(Office);
+      });
+    });
+
+    context('given invalid arguments', function() {
+
+      function throwsAnException() {
+        it('throws an error', function() {
+          var args = this.args;
+          expect(function() {
+            this.collection = Office.createCollectionFrom(args);
+          }).to.throw('Office: invalid offices data format specified');
+        });
+      }
+
+      var specs = [
+        {description: 'nothing', args: null},
+        {description: 'array', args: [1, 2, 3]},
+        {description: 'string', args: 'hello'},
+        {description: 'number', args: 123},
+        {description: 'boolean', args: true}
+      ];
+
+      specs.forEach(function(spec) {
+        context('when ' + spec.description + ' specified', function() {
+          beforeEach(function() {
+            this.args = spec.args;
+          });
+
+          throwsAnException();
+        });
+      });
+
+      context('company is not specified in the data structure', function() {
+        it('throws an error', function() {
+          expect(function() {
+            Office.createCollectionFrom({list: [officeData, anotherOfficeData]});
+          }).to.throw('Office: invalid offices data format specified');
+        });
+      });
+
+      context('list is not specified in the data structure', function() {
+        it('throws an error', function() {
+          expect(function() {
+            Office.createCollectionFrom({company: companyData});
+          }).to.throw('Office: invalid offices data format specified');
+        });
+      });
+    });
+  });
+
+  describe('.findByCompany', function() {
+
+    context('given valid arguments', function() {
+
+      context('when found', function() {
+        beforeEach('stub network activity', function() {
+          sinon.stub(backend, 'get').returns($q(function(resolve) {
+            resolve({
+              company: companyData,
+              list: [officeData, anotherOfficeData]
+            });
+          }));
+        });
+
+        afterEach('restore stubbed network', function() {
+          backend.get.restore();
+        });
+
+        it('returns an array of Office instances', function() {
+          Office.findByCompany(1)
+            .then(function(offices) {
+              expect(offices).to.be.an('array').that.have.property(1).that.is.an.instanceOf(Office);
+            });
+
+          resolvePromises();
+        });
+
+        it('makes request to correct url', function() {
+          Office.findByCompany(1)
+            .then(function() {
+              var ordersUrl = '/company/1/offices';
+              expect(backend.get).to.have.been.calledWith(ordersUrl);
+            });
+
+          resolvePromises();
+        });
+      });
+
+      context('when not found', function() {
+        beforeEach('stub network activity', function() {
+          sinon.stub(backend, 'get').returns($q(function(resolve) {
+            resolve({
+              company: companyData,
+              list: []
+            });
+          }));
+        });
+
+        afterEach(function() {
+          backend.get.restore();
+        });
+
+        it('returns empty array', function() {
+          Office.findByCompany(1)
+            .then(function(offices) {
+              expect(offices).to.be.an('array').that.have.length(0);
+            });
+
+          resolvePromises();
+        });
+      });
+
+      context('when error occured', function() {
+        beforeEach('stub network activity', function() {
+          sinon.stub(backend, 'get').returns($q(function(resolve, reject) {
+            reject();
+          }));
+        });
+
+        afterEach(function() {
+          backend.get.restore();
+        });
+
+        beforeEach('stub $log service', function() {
+          sinon.stub($log, 'error');
+        });
+
+        afterEach(function() {
+          $log.error.restore();
+        });
+
+        it('rejects promise and logs the error', function() {
+          Office.findByCompany(1)
+            .then(function() {
+              expect($log.error).to.have.been.called;
+            });
+
+          resolvePromises();
+        });
+      });
+    });
+
+    context('given invalid arguments', function() {
+      function throwsAnException() {
+        it('throws an error', function() {
+          var args = this.args;
+          expect(function() {
+            Office.findByCompany(args);
+          }).to.throw('Office: non-number specified as an argument for findByCompany');
+        });
+      }
+
+      var specs = [
+        {description: 'nothing', args: null},
+        {description: 'array', args: [1, 2, 3]},
+        {description: 'string', args: 'hello'},
+        {description: 'object', args: {hello: 'world'}}
+      ];
+
+      specs.forEach(function(spec) {
+        context('when ' + spec.description + ' specified', function() {
+          beforeEach(function() {
+            this.args = spec.args;
+          });
+
+          throwsAnException();
+        });
+      });
+    });
+  });
 });

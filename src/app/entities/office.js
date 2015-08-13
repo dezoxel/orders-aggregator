@@ -3,11 +3,44 @@
 
   angular
     .module('sfba.entities')
-    .factory('Office', function ($log, Class, Company, backend) {
+    .factory('Office', function ($log, $q, Class, Company, backend) {
 
       var Office = Class.create({
 
         statics: {
+          findByCompany: function(rawId) {
+            var id = Number(rawId);
+
+            if (id === 0 || isNaN(id) || id === Infinity) {
+              throw new Error('Office: non-number specified as an argument for findByCompany');
+            }
+
+            return backend.get('/company/' + id + '/offices')
+              .then(function(offices) {
+                return Office.createCollectionFrom(offices);
+              })
+              .catch(function() {
+                var msg = 'Office: An error occured when fetching offices';
+
+                $log.error(msg);
+                return $q.reject(msg);
+              });
+          },
+
+          createCollectionFrom: function(officesData) {
+            if (!officesData || !officesData.company || !(officesData.list instanceof Array)) {
+              throw new Error('Office: invalid offices data format specified');
+            }
+
+            return officesData.list.map(function(officeItemData) {
+              var office = officeItemData;
+
+              office.company = new Company(officesData.company);
+
+              return new Office(office);
+            });
+          },
+
           find: function(rawId) {
             var id = Number(rawId);
 
@@ -24,7 +57,10 @@
                 });
               })
               .catch(function() {
-                $log.error('Office: Unable to find office');
+                var msg = 'Office: Unable to find office';
+
+                $log.error(msg);
+                return $q.reject(msg);
               });
           }
         },
@@ -48,7 +84,7 @@
           if (company && company instanceof Company) {
             this._company = company;
           } else {
-            throw new Error('Order: invalid argument for setCompany');
+            throw new Error('Office: invalid argument for setCompany');
           }
         },
 
