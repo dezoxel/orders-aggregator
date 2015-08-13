@@ -595,7 +595,7 @@ describe('Order', function () {
       context('when office is not an instance of Office', function() {
         it('throws an error', function() {
           expect(function() {
-            Order.findWhere(new (function() {})(), week);
+            Order.findWhere(function() {}, week);
           }).to.throw('Order: invalid arguments for findWhere');
         });
       });
@@ -603,7 +603,7 @@ describe('Order', function () {
       context('when week is not an instance of Week', function() {
         it('throws an error', function() {
           expect(function() {
-            Order.findWhere(office, new (function() {})());
+            Order.findWhere(office, function() {});
           }).to.throw('Order: invalid arguments for findWhere');
         });
       });
