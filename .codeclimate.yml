@@ -1,0 +1,10 @@
+languages:
+   JavaScript: true
+exclude_paths:
+- 'src/app/**/*.spec.js'
+- 'e2e/*'
+- 'gulp/*'
+- 'gulpfile.js'
+- 'gulpfile.cli.js'
+- 'protractor.conf.js'
+- 'unit.karma.conf.js'
