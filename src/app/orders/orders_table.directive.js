@@ -43,6 +43,14 @@
         vm.orders.push(order);
       };
 
+      vm.checkOut = function(order, index) {
+        vm.orders.splice(index, 1);
+      };
+
+      vm.checkOutOneDay = function(order, weekday) {
+        order.checkOutFor(weekday);
+      };
+
       vm.init();
     })
     .directive('ordersTable', function() {

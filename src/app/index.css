@@ -1,14 +1,26 @@
-.browsehappy {
-  margin: 0.2em 0;
-  background: #ccc;
-  color: #000;
-  padding: 0.2em 0;
+.orders-table > thead > tr > th,
+.orders-table > tbody > tr > th,
+.orders-table > tfoot > tr > th,
+.orders-table > thead > tr > td,
+.orders-table > tbody > tr > td,
+.orders-table > tfoot > tr > td {
+  padding: 1px;
 }
 
-.thumbnail {
-  height: 200px;
+.orders-table .client-name .remove-icon {
+  display: none;
 }
 
-.thumbnail img.pull-right {
-  width: 50px;
+.orders-table .client-name:hover .remove-icon {
+  display: inline;
+  cursor: pointer;
+}
+
+.orders-table .weekday .remove-icon {
+  display: none;
+}
+
+.orders-table .weekday:hover .dishset:not(:empty) + .remove-icon {
+  display: inline;
+  cursor: pointer;
 }
