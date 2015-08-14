@@ -17,7 +17,7 @@
         mid_no_garnish: {id: 'mid_no_garnish', title: 'Medium, no garnish', price: 40},
         salad:          {id: 'salad',          title: 'Only salad',         price: 25},
         meat:           {id: 'meat',           title: 'Only meat',          price: 35},
-        garnish:        {id: 'garnish',        title: 'Only garnish',       price: 3}
+        garnish:        {id: 'garnish',        title: 'Only garnish',       price: 30}
       };
 
       this.displayNameFor = function(dishSetId) {
@@ -33,6 +33,13 @@
 
       this.isValid = function(dishSetId) {
         return typeof dishSetId === 'string' && map[dishSetId];
+      };
+
+      this.priceFor = function(dishSetId) {
+        dishSetId = (!this.isValid(dishSetId)) ? 'none' : dishSetId;
+
+        var dishSet = map[dishSetId];
+        return dishSet.price;
       };
   });
 })(angular);

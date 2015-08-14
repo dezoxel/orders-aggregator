@@ -38,7 +38,7 @@
       <span class="dishset">{{ order.dishsetFor('fri') }}</span>
       <i class="remove-icon glyphicon glyphicon-remove-circle pull-right" ng-click="vm.checkOutOneDay(order, 'fri')"></i>
     </td>
-    <td>360</td>
+    <td>{{ order.totalToPay() }}</td>
     <td>0</td>
     <td>-55</td>
   </tr>

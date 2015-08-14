@@ -145,6 +145,18 @@
           } else {
             throw new Error('Order: invalid argument for setOffice');
           }
+        },
+
+        totalToPay: function() {
+          var total = 0;
+
+          for(var weekday in this._dishSet) {
+            var dishSetPerDay = this._dishSet[weekday];
+
+            total += dishSets.priceFor(dishSetPerDay);
+          }
+
+          return total;
         }
       });
 

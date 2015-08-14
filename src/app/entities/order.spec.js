@@ -437,6 +437,44 @@ describe('Order', function () {
     });
   });
 
+  describe.only('#totalToPay', function() {
+    context('when nothing ordered', function() {
+      beforeEach('create new order', function() {
+        this.order = new Order({client: client, week: week, office: office});
+      });
+
+      it('returns zero total', function() {
+        expect(this.order.totalToPay()).to.equal(0);
+      });
+    });
+
+    context('when big and mid dish sets ordered', function() {
+      beforeEach('create new order', function() {
+        this.order = new Order({client: client, week: week, office: office, dishSet: {mon: 'big', tue: 'mid'}});
+      });
+
+      it('returns sum of big and mid dish sets', inject(function(dishSets) {
+        expect(this.order.totalToPay()).to.equal(dishSets.priceFor('big') + dishSets.priceFor('mid'));
+      }));
+    });
+
+    context('when whole week big_no_meat ordered', function() {
+      beforeEach('create new order', function() {
+        this.order = new Order({client: client, week: week, office: office, dishSet: {
+          mon: 'big_no_meat',
+          tue: 'big_no_meat',
+          wed: 'big_no_meat',
+          thu: 'big_no_meat',
+          fri: 'big_no_meat'
+        }});
+      });
+
+      it('returns sum of 5 big_no_meat dish sets', inject(function(dishSets) {
+        expect(this.order.totalToPay()).to.equal(dishSets.priceFor('big_no_meat') * 5);
+      }));
+    });
+  });
+
   describe('.createCollectionFrom', function() {
 
     context('given valid arguments', function() {
