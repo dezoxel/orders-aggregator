@@ -198,11 +198,11 @@ describe('Order', function () {
 
       function throwsAnException() {
         it('throws an error', function() {
-          var orderArgs = this.orderArgs;
+          var args = this.args;
           var order = this.order;
 
           expect(function() {
-            order.setClient(orderArgs);
+            order.setClient(args);
           }).to.throw('Order: invalid argument for setClient');
         });
       }
@@ -222,7 +222,7 @@ describe('Order', function () {
 
         context(spec.description, function() {
           beforeEach(function() {
-            this.orderArgs = spec.args;
+            this.args = spec.args;
           });
 
           throwsAnException();
@@ -250,11 +250,11 @@ describe('Order', function () {
 
       function throwsAnException() {
         it('throws an error', function() {
-          var orderArgs = this.orderArgs;
+          var args = this.args;
           var order = this.order;
 
           expect(function() {
-            order.setWeek(orderArgs);
+            order.setWeek(args);
           }).to.throw('Order: invalid argument for setWeek');
         });
       }
@@ -271,7 +271,7 @@ describe('Order', function () {
 
         context(spec.description, function() {
           beforeEach(function() {
-            this.orderArgs = spec.args;
+            this.args = spec.args;
           });
 
           throwsAnException();
@@ -302,11 +302,11 @@ describe('Order', function () {
 
       function throwsAnException() {
         it('throws an error', function() {
-          var orderArgs = this.orderArgs;
+          var args = this.args;
           var order = this.order;
 
           expect(function() {
-            order.setOffice(orderArgs);
+            order.setOffice(args);
           }).to.throw('Order: invalid argument for setOffice');
         });
       }
@@ -323,7 +323,7 @@ describe('Order', function () {
 
         context(spec.description, function() {
           beforeEach(function() {
-            this.orderArgs = spec.args;
+            this.args = spec.args;
           });
 
           throwsAnException();
@@ -351,11 +351,11 @@ describe('Order', function () {
 
       function throwsAnException() {
         it('throws an error', function() {
-          var orderArgs = this.orderArgs;
+          var args = this.args;
           var order = this.order;
 
           expect(function() {
-            order.setDishsetFor('tue', orderArgs);
+            order.setDishsetFor('tue', args);
           }).to.throw('Order: invalid argument for setDishsetFor');
         });
       }
@@ -372,7 +372,7 @@ describe('Order', function () {
 
         context(spec.description, function() {
           beforeEach(function() {
-            this.orderArgs = spec.args;
+            this.args = spec.args;
           });
 
           throwsAnException();
@@ -384,6 +384,54 @@ describe('Order', function () {
           expect(function() {
             order.setDishsetFor('tuesday', 'big');
           }).to.throw('Order: invalid argument for setDishsetFor');
+        });
+      });
+    });
+  });
+
+  describe('#checkOutFor', function() {
+    beforeEach('create new order', function() {
+      this.order = new Order({client: client, week: week, office: office, dishSet: orderData.dishSet});
+    });
+
+    context('given valid arguments', function() {
+      beforeEach(function() {
+        this.order.checkOutFor('tue');
+      });
+
+      it('removes the order for specific week day', function() {
+        expect(this.order.dishsetFor('tue')).to.be.empty;
+      });
+    });
+
+    context('given invalid arguments', function() {
+      function throwsAnException() {
+        it('throws an exception', function() {
+          var args = this.args;
+          var order = this.order;
+
+          expect(function() {
+            order.checkOutFor(args);
+          }).to.throw('Order: invalid argument for checkOutFor');
+        });
+      }
+
+      var specs = [
+        {description: 'when nothing specified', args: null},
+        {description: 'when object', args: {hello: 'world'}},
+        {description: 'when number specified', args: 123},
+        {description: 'when array specified', args: [1,2,3]},
+        {description: 'when non existing weekday specified', args: 'monthursday'},
+      ];
+
+      specs.forEach(function(spec) {
+
+        context(spec.description, function() {
+          beforeEach(function() {
+            this.args = spec.args;
+          });
+
+          throwsAnException();
         });
       });
     });

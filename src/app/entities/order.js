@@ -95,6 +95,14 @@
           }
         },
 
+        checkOutFor: function(weekday) {
+          if (this._isValidWeekday(weekday)) {
+            this._dishSet[weekday] = null;
+          } else {
+            throw new Error('Order: invalid argument for checkOutFor');
+          }
+        },
+
         _isValidWeekday: function(weekday) {
           return typeof weekday === 'string' && this._weekdays.indexOf(weekday) !== -1;
         },
