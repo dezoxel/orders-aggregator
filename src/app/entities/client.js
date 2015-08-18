@@ -3,15 +3,11 @@
 
   angular
     .module('sfba.entities')
-    .factory('Client', Client);
-
-    function Client(Class) {
-
-      return Class.create({
+    .factory('Client', function (Class) {
+      var Client = Class.create({
 
         _id: null,
-        _firstName: '',
-        _lastName: '',
+        _fullName: '',
 
         constructor: function(params) {
           if (typeof params === 'string') {
@@ -25,47 +21,22 @@
           }
 
           this._id = params.id;
-          this._firstName = params.firstName || '';
-          this._lastName = params.lastName || '';
-
-          if (params.fullName && this._isNameEmpty()) {
-            this._splitFullNameAndSave(params.fullName);
-          }
-        },
-
-        _isNameEmpty: function() {
-          return this.firstName() === '' && this.lastName() === '';
-        },
-
-        _splitFullNameAndSave: function(fullName) {
-          var names = fullName.split(' ');
-
-          this._firstName = names[0] || '';
-          this._lastName = names[1] || '';
+          this._fullName = params.fullName;
         },
 
         isValidConstructorParams: function(params) {
-          return (
-            (params.firstName && params.lastName) ||
-            (params.fullName && params.fullName.indexOf(' ') !== -1)
-          );
+          return Boolean(params.fullName);
         },
 
         fullName: function() {
-          return this._firstName + ' ' + this._lastName;
-        },
-
-        firstName: function() {
-          return this._firstName;
-        },
-
-        lastName: function() {
-          return this._lastName;
+          return this._fullName;
         },
 
         id: function() {
           return this._id;
         }
       });
-    }
+
+      return Client;
+    });
 })(angular);

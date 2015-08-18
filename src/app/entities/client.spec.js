@@ -15,14 +15,6 @@ describe('Client', function () {
 
       function behavesLikeValidClient() {
 
-        it('has first name', function() {
-          expect(this.client.firstName()).to.equal('Vasya');
-        });
-
-        it('has last name', function() {
-          expect(this.client.lastName()).to.equal('Pupkin');
-        });
-
         it('has full name', function() {
           expect(this.client.fullName()).to.equal('Vasya Pupkin');
         });
@@ -42,26 +34,16 @@ describe('Client', function () {
 
       context('possible specify many arguments', function() {
         beforeEach('create client', function() {
-          this.client = new Client({firstName: 'Vasya', lastName: 'Pupkin'});
+          this.client = new Client({fullName: 'Vasya Pupkin', ignoredAttr: 30});
         });
 
         behavesLikeValidClient();
-      });
-
-      context('fist, last and full name specified', function() {
-        beforeEach('create client', function() {
-          this.client = new Client({firstName: 'Vasya', lastName: 'Pupkin', fullName: 'Ivan Ivanov'});
-        });
-
-        it('ignores full name', function() {
-          expect(this.client.lastName()).to.equal('Pupkin');
-        });
       });
     });
 
     context('given invalid arguments', function() {
       function throwsAnException() {
-        it('throws an error', function() {
+        it('throws an exception', function() {
           var clientArgs = this.clientArgs;
           expect(function() {
             new Client(clientArgs);
@@ -72,10 +54,7 @@ describe('Client', function () {
       var specs = [
         {description: 'when empty signature', args: null},
         {description: 'when empty params hash', args: {}},
-        {description: 'when only first name specified', args: {firstName: 'Vasya'}},
-        {description: 'when only last name specified', args: {lastName: 'Pupkin'}},
-        {description: 'when empty full name specified', args: {fullName: ''}},
-        {description: 'when only first name specified as the full name', args: {fullName: 'Vasya'}}
+        {description: 'when empty full name specified', args: {fullName: ''}}
       ];
 
       specs.forEach(function(spec) {
@@ -93,31 +72,11 @@ describe('Client', function () {
 
   describe('#fullName', function() {
     beforeEach('create client', function() {
-      this.client = new Client({firstName: 'Vasya', lastName: 'Pupkin', id: 123});
+      this.client = new Client({fullName: 'Vasya Pupkin', id: 123});
     });
 
     it('returns correct full name', function() {
       expect(this.client.fullName()).to.equal('Vasya Pupkin');
-    });
-  });
-
-  describe('#firstName', function() {
-    beforeEach('create client', function() {
-      this.client = new Client({fullName: 'Vasya Pupkin', id: 123});
-    });
-
-    it('returns correct first name', function() {
-      expect(this.client.firstName()).to.equal('Vasya');
-    });
-  });
-
-  describe('#lastName', function() {
-    beforeEach('create client', function() {
-      this.client = new Client({fullName: 'Vasya Pupkin', id: 123});
-    });
-
-    it('returns correct last name', function() {
-      expect(this.client.lastName()).to.equal('Pupkin');
     });
   });
 
