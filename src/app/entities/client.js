@@ -3,11 +3,27 @@
 
   angular
     .module('sfba.entities')
-    .factory('Client', function (Class) {
-      var Client = Class.create({
+    .factory('Client', function(BaseModel) {
 
-        _id: null,
-        _fullName: '',
+      var Client = BaseModel.extend({
+
+        _attrs: ['id', 'fullName'],
+
+        _validators: {
+          fullName: {
+            presence: true,
+            length: {
+              minimum: 2,
+              maximum: 100
+            }
+          },
+          id: {
+            numericality: {
+              onlyInteger: true,
+              greaterThan: 0
+            }
+          }
+        },
 
         constructor: function(params) {
           if (typeof params === 'string') {
@@ -16,24 +32,7 @@
             params = params || {};
           }
 
-          if (!this.isValidConstructorParams(params)) {
-            throw new Error('Client: constructor params is not valid');
-          }
-
-          this._id = params.id;
-          this._fullName = params.fullName;
-        },
-
-        isValidConstructorParams: function(params) {
-          return Boolean(params.fullName);
-        },
-
-        fullName: function() {
-          return this._fullName;
-        },
-
-        id: function() {
-          return this._id;
+          this._super([params]);
         }
       });
 

@@ -16,11 +16,11 @@ describe('Client', function () {
       function behavesLikeValidClient() {
 
         it('has full name', function() {
-          expect(this.client.fullName()).to.equal('Vasya Pupkin');
+          expect(this.client.get('fullName')).to.equal('Vasya Pupkin');
         });
 
         it('has empty id', function() {
-          expect(this.client.id()).to.be.empty;
+          expect(this.client.get('id')).to.be.empty;
         });
       }
 
@@ -47,7 +47,7 @@ describe('Client', function () {
           var clientArgs = this.clientArgs;
           expect(function() {
             new Client(clientArgs);
-          }).to.throw('Client: constructor params is not valid');
+          }).to.throw(Error);
         });
       }
 
@@ -70,37 +70,80 @@ describe('Client', function () {
     });
   });
 
-  describe('#fullName', function() {
+  describe('set fullName', function() {
     beforeEach('create client', function() {
       this.client = new Client({fullName: 'Vasya Pupkin', id: 123});
     });
 
-    it('returns correct full name', function() {
-      expect(this.client.fullName()).to.equal('Vasya Pupkin');
+    context('given valid arguments', function() {
+      beforeEach('set full name', function() {
+        this.client.set('fullName', 'Petro Petrovich');
+      });
+
+      it('returns correct full name', function() {
+        expect(this.client.get('fullName')).to.equal('Petro Petrovich');
+      });
+    });
+
+    context('given invalid arguments', function() {
+      var specs = [
+        {title: 'nothing', arg: null},
+        {title: 'empty name', arg: ''},
+        {title: 'less than 2 symbols', arg: 'M'},
+        {title: 'more than 100 symbols', arg: new Array(100).join('a')},
+      ];
+
+      specs.forEach(function(spec) {
+        context('when ' + spec.title + ' specified', function() {
+          it('throws an exception', function() {
+            expect(function() {
+              this.client.set('fullName', spec.arg);
+            }).to.throw(Error);
+          });
+        });
+      });
     });
   });
 
-  describe('#id', function() {
+  describe.only('set id', function() {
 
-    context('when specified', function() {
+    context('given valid arguments', function() {
 
-      beforeEach('client with id', function() {
-        this.client = new Client({fullName: 'Vasya Pupkin', id: 123});
+      context('when ID specified', function() {
+        beforeEach('valid client', function() {
+          this.client = new Client({fullName: 'Vasya Pupkin', id: 123});
+        });
+
+        it('returns correct ID', function() {
+          expect(this.client.get('id')).to.equal(123);
+        });
       });
 
-      it('returns correct ID', function() {
-        expect(this.client.id()).to.equal(123);
+      context('when ID is not specified', function() {
+        beforeEach('client without id', function() {
+          this.client = new Client('Vasya Pupkin');
+        });
+
+        it('returns empty ID', function() {
+          expect(this.client.get('id')).to.be.empty;
+        });
       });
     });
 
-    context('when not specified', function() {
+    context('given invalid arguments', function() {
+      var specs = [
+        {title: 'zero', arg: 0},
+        {title: 'not a number', arg: 'hello world'},
+      ];
 
-      beforeEach('client without id', function() {
-        this.client = new Client('Vasya Pupkin');
-      });
-
-      it('returns empty ID', function() {
-        expect(this.client.id()).to.be.empty;
+      specs.forEach(function(spec) {
+        context('when ' + spec.title + ' specified', function() {
+          it('throws an exception', function() {
+            expect(function() {
+              this.client.set('id', spec.arg);
+            }).to.throw(Error);
+          });
+        });
       });
     });
   });

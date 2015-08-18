@@ -31,8 +31,7 @@ Factory.define('paymentTwo', Payment, {
 
 Factory.define('client', Client, {
   id: 56,
-  firstName: 'Vasya',
-  lastName: 'Pupkin'
+  fullName: 'Vasya Pupkin'
 });
 
 Factory.define('week', Week, {

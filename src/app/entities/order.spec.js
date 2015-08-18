@@ -201,7 +201,7 @@ describe('Order', function () {
       });
 
       it('sets the new client instance', function() {
-        expect(this.order.client().fullName()).to.equal('Ivan Ivanov');
+        expect(this.order.client().get('fullName')).to.equal('Ivan Ivanov');
       });
     });
 
@@ -220,10 +220,7 @@ describe('Order', function () {
 
       var specs = [
         {description: 'when nothing specified', args: null},
-        {description: 'when hash specified instead of Client instance', args: {
-          firstName: 'Ivan',
-          lastName: 'Ivanov'
-        }},
+        {description: 'when hash specified instead of Client instance', args: {fullName: 'Ivan Ivanov'}},
         {description: 'when number specified', args: 123},
         {description: 'when string specified', args: 'Hello from Hack world'},
         {description: 'when array specified', args: [1,2,3]},
@@ -678,7 +675,7 @@ describe('Order', function () {
         it('throws an error', function() {
           expect(function() {
             Order.createCollectionFrom({office: officeData, week: weekData, list: [{}]});
-          }).to.throw('Client: constructor params is not valid');
+          }).to.throw(Error);
         });
       });
 
