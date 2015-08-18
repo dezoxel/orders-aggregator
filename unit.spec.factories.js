@@ -29,6 +29,11 @@ Factory.define('paymentTwo', Payment, {
   timestamp: 987654321
 });
 
+Factory.define('clientData', Client, {
+  id: 56,
+  fullName: 'Vasya Pupkin'
+});
+
 Factory.define('client', Client, {
   id: 56,
   fullName: 'Vasya Pupkin'

@@ -105,7 +105,7 @@ describe('Client', function () {
     });
   });
 
-  describe.only('set id', function() {
+  describe('set id', function() {
 
     context('given valid arguments', function() {
 
@@ -143,6 +143,119 @@ describe('Client', function () {
               this.client.set('id', spec.arg);
             }).to.throw(Error);
           });
+        });
+      });
+    });
+  });
+
+  describe('.findOrCreateByFullName', function() {
+    function resolvePromises() {
+      $rootScope.$digest();
+    }
+
+    var $q, $rootScope, backend;
+    beforeEach('reassign injected services', inject(function(_$q_, _$rootScope_, _backend_) {
+      $q = _$q_;
+      $rootScope = _$rootScope_;
+      backend = _backend_;
+    }));
+
+    beforeEach(function() {
+      this.fullName = 'Petro Petrovich';
+    });
+
+    context('given valid arguments', function() {
+      context('when found', function() {
+        beforeEach(function() {
+          sinon.stub(backend, 'get').returns($q(function(resolve) {
+            resolve(Factory.buildSync('clientData', {fullName: 'Petro Petrovich'}));
+          }));
+        });
+
+        afterEach(function() {
+          backend.get.restore();
+        });
+
+        it('makes request to "/clients/findOrCreate/fullName" API', function() {
+          Client.findOrCreateByFullName(this.fullName)
+            .then(function() {
+              expect(backend.get).to.have.been.calledWith('/clients/findOrCreate/fullName/' + this.fullName);
+            }.bind(this));
+
+          resolvePromises();
+        });
+
+        it('returns client instance', function() {
+          Client.findOrCreateByFullName(this.fullName)
+            .then(function(client) {
+              expect(client.get('fullName')).to.equal(this.fullName);
+            }.bind(this));
+
+          resolvePromises();
+        });
+
+        it('returns client containing ID', function() {
+          Client.findOrCreateByFullName(this.fullName)
+            .then(function(client) {
+              expect(client.get('id')).to.exist;
+            });
+
+          resolvePromises();
+        });
+      });
+
+      context('when not found', function() {
+        var $log;
+        beforeEach('reassign injected services', inject(function(_$log_) {
+          $log = _$log_;
+        }));
+
+        beforeEach(function() {
+          sinon.stub(backend, 'get').returns($q(function(resolve, reject) {
+            reject();
+          }));
+        });
+
+        afterEach(function() {
+          backend.get.restore();
+        });
+
+        beforeEach(function() {
+          sinon.stub($log, 'error');
+        });
+
+        afterEach(function() {
+          $log.error.restore();
+        });
+
+        it('logs the error', function() {
+          Client.findOrCreateByFullName(this.fullName)
+            .then(function() {
+              // hack in order to cover case when client code doesn't return rejected promise by chain if failed
+              expect(true).to.be.false;
+            })
+            .catch(function() {
+              expect($log.error).to.have.been.called;
+            });
+
+          resolvePromises();
+        });
+
+        it('rejects promise', function() {
+          var promise = Client.findOrCreateByFullName(this.fullName);
+          resolvePromises();
+          // TODO: This shit doesn't work at all, figure out why
+          expect(promise).to.be.rejected;
+        });
+      });
+    });
+
+    context('given invalid arguments', function() {
+      context('when nothing specified', function() {
+        it('throws an exception', function() {
+          expect(function() {
+            Client.findOrCreateByFullName();
+          }).to.throw(Error);
         });
       });
     });

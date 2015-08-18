@@ -3,7 +3,7 @@
 
   angular
     .module('sfba.entities')
-    .factory('Client', function(BaseModel) {
+    .factory('Client', function(BaseModel, validate, $q, $log, backend) {
 
       var Client = BaseModel.extend({
 
@@ -23,6 +23,26 @@
               greaterThan: 0
             }
           }
+        },
+
+        statics: {
+          findOrCreateByFullName: function(fullName) {
+            if (!fullName) {
+              throw new Error('Client: invalid arguments for findOrCreateByFullName');
+            }
+
+            var url = '/clients/findOrCreate/fullName/' + fullName;
+            return backend.get(url)
+              .then(function(clientData) {
+                return new Client(clientData);
+              })
+              .catch(function() {
+                var msg = 'Client: An error occured while finding client';
+                $log.error(msg);
+
+                return $q.reject(msg);
+              });
+          },
         },
 
         constructor: function(params) {
