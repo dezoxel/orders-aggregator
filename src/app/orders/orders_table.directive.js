@@ -37,7 +37,8 @@
           client: new Client(fullName),
           week: vm.week,
           office: vm.office,
-          dishSet: angular.copy(selectedDishSets)
+          dishSet: angular.copy(selectedDishSets),
+          payments: []
         });
 
         vm.orders.push(order);

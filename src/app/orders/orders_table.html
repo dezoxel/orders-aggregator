@@ -39,7 +39,7 @@
       <i class="remove-icon glyphicon glyphicon-remove-circle pull-right" ng-click="vm.checkOutOneDay(order, 'fri')"></i>
     </td>
     <td>{{ order.totalToPay() }}</td>
-    <td>0</td>
+    <td>{{ order.totalPaid() }}</td>
     <td>-55</td>
   </tr>
 </table>

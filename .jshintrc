@@ -23,6 +23,8 @@
     "expect": false,
     "moment": false,
     "Class": false,
-    "sinon": false
+    "sinon": false,
+    "validate": false,
+    "Factory": false
   }
 }

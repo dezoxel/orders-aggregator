@@ -2,7 +2,9 @@
 
 Automation of accounting for small food business
 
-## TODO
+## Technical TODO
+- Avoid Week entity
+- Add created_at, updated_at attributes for each model
 - Integrate something similar to Ruby Guard for automatically run tests
 - Migrate to Angular UI Router
 - Migrate to ES6

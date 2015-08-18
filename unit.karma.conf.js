@@ -18,12 +18,12 @@ function listFiles() {
       path.join(conf.paths.src, '/app/**/*.js'),
       path.join(conf.paths.src, '/**/*.spec.js'),
       path.join(conf.paths.src, '/**/*.mock.js'),
-      path.join(conf.paths.src, '/**/*.html')
+      path.join(conf.paths.src, '/**/*.html'),
+      path.join(conf.paths.root, '/unit.spec.factories.js')
     ]);
 }
 
 module.exports = function(config) {
-
   var configuration = {
     files: listFiles(),
 

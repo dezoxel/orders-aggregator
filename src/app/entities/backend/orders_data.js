@@ -69,10 +69,27 @@
           });
 
           return {
+            id: randomInteger(1, 999),
             client: {fullName: name},
-            dishSet: dishSet
+            dishSet: dishSet,
+            payments: generatePayments()
           };
         });
+      }
+
+      function generatePayments() {
+        var payments = [];
+        var bills = [20, 50, 100, 200];
+
+        for(var i = 0; i < randomInteger(1, 3); i++) {
+          payments.push({
+            id: randomInteger(1, 999),
+            timestamp: moment().unix(),
+            amount: bills[randomInteger(0, bills.length - 1)]
+          });
+        }
+
+        return payments;
       }
 
       return {

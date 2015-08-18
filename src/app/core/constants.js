@@ -1,9 +1,10 @@
-(function(angular, moment, Class) {
+(function(angular, moment, Class, validate) {
   'use strict';
 
   angular
     .module('sfba.core')
     .constant('moment', moment)
-    .constant('Class', Class);
+    .constant('Class', Class)
+    .constant('validate', validate);
 
-})(angular, moment, Class);
+})(angular, moment, Class, validate);

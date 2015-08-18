@@ -28,7 +28,8 @@ describe('Order', function () {
         wed: 'big',
         thu: 'mid_no_meat',
         fri: 'mid_no_salad'
-      }
+      },
+      payments: [{amount: 100, timestamp: 123456789}]
     };
 
     anotherOrderData = {
@@ -42,7 +43,8 @@ describe('Order', function () {
         wed: 'mid',
         thu: 'big_no_meat',
         fri: 'big_no_salad'
-      }
+      },
+      payments: [{amount: 200, timestamp: 987654321}]
     };
   });
 
@@ -70,13 +72,18 @@ describe('Order', function () {
     });
   }));
 
-  beforeEach('create offce', inject(function(Company) {
+  beforeEach('create office', inject(function(Company) {
     office = new Office({
       id: officeData.id,
       title: officeData.title,
       company: new Company(officeData.company.title)
     });
   }));
+
+  var payment;
+  beforeEach('valid payment', function() {
+    payment = Factory.buildSync('payment');
+  });
 
   describe('#create', function() {
 
@@ -86,6 +93,7 @@ describe('Order', function () {
         orderParams.client = client;
         orderParams.week = week;
         orderParams.office = office;
+        orderParams.payments = [payment];
         order = new Order(orderParams);
       });
 
@@ -99,6 +107,10 @@ describe('Order', function () {
 
       it('sets Office dependency', function() {
         expect(order.office()).to.be.an.instanceOf(Office);
+      });
+
+      it('sets payments array', function() {
+        expect(order.payments()).to.have.property(0);
       });
 
       var specs = [
@@ -128,7 +140,7 @@ describe('Order', function () {
       context('when client is not specified', function() {
         it('throws an error', function() {
           expect(function() {
-            new Order({week: week, office: office});
+            new Order({week: week, office: office, payments: [payment]});
           }).to.throw('Order: constructor params is not valid');
         });
       });
@@ -136,7 +148,7 @@ describe('Order', function () {
       context('when week is not specified', function() {
         it('throws an error', function() {
           expect(function() {
-            new Order({client: client, office: office});
+            new Order({client: client, office: office, payments: [payment]});
           }).to.throw('Order: constructor params is not valid');
         });
       });
@@ -144,8 +156,16 @@ describe('Order', function () {
       context('when office is not specified', function() {
         it('throws an error', function() {
           expect(function() {
-            new Order({week: week, client: client});
+            new Order({week: week, client: client, payments: [payment]});
           }).to.throw('Order: constructor params is not valid');
+        });
+      });
+
+      context('when payments is not specified', function() {
+        it('throws an error', function() {
+          expect(function() {
+            new Order({week: week, client: client, office: office});
+          }).to.throw('Order: payments should be an array');
         });
       });
     });
@@ -156,7 +176,7 @@ describe('Order', function () {
     context('when specified', function() {
 
       beforeEach('order with id', function() {
-        this.order = new Order({id: 123, client: client, week: week, office: office});
+        this.order = new Order({id: 123, client: client, week: week, office: office, payments: [payment]});
       });
 
       it('returns correct ID', function() {
@@ -167,7 +187,7 @@ describe('Order', function () {
     context('when not specified', function() {
 
       beforeEach('order without id', function() {
-        this.order = new Order({client: client, week: week, office: office});
+        this.order = new Order({client: client, week: week, office: office, payments: [payment]});
       });
 
       it('returns empty ID', function() {
@@ -178,7 +198,7 @@ describe('Order', function () {
 
   describe('#setClient', function() {
     beforeEach('create new order', function() {
-      this.order = new Order({client: client, week: week, office: office});
+      this.order = new Order({client: client, week: week, office: office, payments: [payment]});
     });
 
     context('given valid arguments', function() {
@@ -233,7 +253,7 @@ describe('Order', function () {
 
   describe('#setWeek', function() {
     beforeEach(function() {
-      this.order = new Order({client: client, week: week, office: office});
+      this.order = new Order({client: client, week: week, office: office, payments: [payment]});
     });
 
     context('given valid arguments', function() {
@@ -282,7 +302,7 @@ describe('Order', function () {
 
   describe('#setOffice', function() {
     beforeEach('create new order', function() {
-      this.order = new Order({client: client, week: week, office: office});
+      this.order = new Order({client: client, week: week, office: office, payments: [payment]});
     });
 
     context('given valid arguments', function() {
@@ -334,7 +354,7 @@ describe('Order', function () {
 
   describe('#setDishsetFor', function() {
     beforeEach('create new order', function() {
-      this.order = new Order({client: client, week: week, office: office});
+      this.order = new Order({client: client, week: week, office: office, payments: [payment]});
     });
 
     context('given valid arguments', function() {
@@ -391,7 +411,13 @@ describe('Order', function () {
 
   describe('#checkOutFor', function() {
     beforeEach('create new order', function() {
-      this.order = new Order({client: client, week: week, office: office, dishSet: orderData.dishSet});
+      this.order = new Order({
+        client: client,
+        week: week,
+        office: office,
+        dishSet: orderData.dishSet,
+        payments: [payment]
+      });
     });
 
     context('given valid arguments', function() {
@@ -437,10 +463,10 @@ describe('Order', function () {
     });
   });
 
-  describe.only('#totalToPay', function() {
+  describe('#totalToPay', function() {
     context('when nothing ordered', function() {
       beforeEach('create new order', function() {
-        this.order = new Order({client: client, week: week, office: office});
+        this.order = new Order({client: client, week: week, office: office, payments: [payment]});
       });
 
       it('returns zero total', function() {
@@ -450,7 +476,13 @@ describe('Order', function () {
 
     context('when big and mid dish sets ordered', function() {
       beforeEach('create new order', function() {
-        this.order = new Order({client: client, week: week, office: office, dishSet: {mon: 'big', tue: 'mid'}});
+        this.order = new Order({
+          client: client,
+          week: week,
+          office: office,
+          dishSet: {mon: 'big', tue: 'mid'},
+          payments: [payment]
+        });
       });
 
       it('returns sum of big and mid dish sets', inject(function(dishSets) {
@@ -461,17 +493,148 @@ describe('Order', function () {
     context('when whole week big_no_meat ordered', function() {
       beforeEach('create new order', function() {
         this.order = new Order({client: client, week: week, office: office, dishSet: {
-          mon: 'big_no_meat',
-          tue: 'big_no_meat',
-          wed: 'big_no_meat',
-          thu: 'big_no_meat',
-          fri: 'big_no_meat'
-        }});
+            mon: 'big_no_meat',
+            tue: 'big_no_meat',
+            wed: 'big_no_meat',
+            thu: 'big_no_meat',
+            fri: 'big_no_meat'
+          },
+          payments: [payment]
+        });
       });
 
       it('returns sum of 5 big_no_meat dish sets', inject(function(dishSets) {
         expect(this.order.totalToPay()).to.equal(dishSets.priceFor('big_no_meat') * 5);
       }));
+    });
+  });
+
+  describe('#totalPaid', function() {
+    context('when no payments', function() {
+      beforeEach('order without payments', function() {
+        this.order = new Order({client: client, week: week, office: office, payments: []});
+      });
+
+      it('returns zero', function() {
+        expect(this.order.totalPaid()).to.equal(0);
+      });
+    });
+
+    context('when one payment', function() {
+      beforeEach('order with one payment', function() {
+        this.order = new Order({client: client, week: week, office: office, payments: [payment]});
+      });
+
+      it('returns payment amount', function() {
+        expect(this.order.totalPaid()).to.equal(250);
+      });
+    });
+
+    context('when many payments', function() {
+      beforeEach('order with two payments', function() {
+        this.order = new Order({
+          client: client,
+          week: week,
+          office: office,
+          payments: [payment, Factory.buildSync('paymentTwo')]
+        });
+      });
+
+      it('returns sum of payment amounts', function() {
+        expect(this.order.totalPaid()).to.equal(430);
+      });
+    });
+  });
+
+  describe('#setPayments', function() {
+    beforeEach('create valid order', function() {
+      this.order = new Order({client: client, week: week, office: office, payments: [payment]});
+    });
+
+    context('given valid arguments', function() {
+      beforeEach(function() {
+        this.order.setPayments([Factory.buildSync('paymentTwo')]);
+      });
+
+      it('sets the new payments array', function() {
+        expect(this.order.payments()[0].get('amount')).to.equal(180);
+      });
+    });
+
+    context('given invalid arguments', function() {
+
+      function throwsAnException() {
+        it('throws an exception', function() {
+          var args = this.args;
+          var order = this.order;
+
+          expect(function() {
+            order.setPayments(args);
+          }).to.throw(Error);
+        });
+      }
+
+      var specs = [
+        {description: 'when nothing specified', args: null},
+        {description: 'when not an array of Payment instances specified', args: 'hello world'},
+      ];
+
+      specs.forEach(function(spec) {
+
+        context(spec.description, function() {
+          beforeEach(function() {
+            this.args = spec.args;
+          });
+
+          throwsAnException();
+        });
+      });
+    });
+  });
+
+  describe('#addPayment', function() {
+    beforeEach('create valid order', function() {
+      this.order = new Order({client: client, week: week, office: office, payments: [payment]});
+    });
+
+    context('given valid arguments', function() {
+      beforeEach(function() {
+        this.order.addPayment(Factory.buildSync('paymentTwo'));
+      });
+
+      it('adds the the new payment', function() {
+        expect(this.order.payments()[1].get('amount')).to.equal(180);
+      });
+    });
+
+    context('given invalid arguments', function() {
+
+      function throwsAnException() {
+        it('throws an exception', function() {
+          var args = this.args;
+          var order = this.order;
+
+          expect(function() {
+            order.addPayment(args);
+          }).to.throw(Error);
+        });
+      }
+
+      var specs = [
+        {description: 'when nothing specified', args: null},
+        {description: 'when not a Payment instance specified', args: 'hello world'},
+      ];
+
+      specs.forEach(function(spec) {
+
+        context(spec.description, function() {
+          beforeEach(function() {
+            this.args = spec.args;
+          });
+
+          throwsAnException();
+        });
+      });
     });
   });
 

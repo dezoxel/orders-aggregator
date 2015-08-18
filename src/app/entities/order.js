@@ -3,7 +3,7 @@
 
   angular
     .module('sfba.entities')
-    .factory('Order', function ($log, Class, Client, Week, Office, Company, dishSets, backend, moment) {
+    .factory('Order', function ($log, Class, Client, Week, Office, Company, Payment, dishSets, backend, moment) {
 
       var Order = Class.create({
 
@@ -33,19 +33,19 @@
               throw new Error('Order: invalid orders data format specified');
             }
 
-            return ordersData.list.map(function(orderItemData) {
-              var order = orderItemData;
+            return ordersData.list.map(function(orderData) {
 
-              order.client = new Client(orderItemData.client);
-
-              order.week = new Week({startDate: moment(ordersData.week.startDate, 'YYYY-MM-DD')});
-
-              order.office = new Office({
-                company: new Company(ordersData.office.company),
-                title: ordersData.office.title
+              return new Order({
+                id: orderData.id,
+                client: new Client(orderData.client),
+                week: new Week({startDate: moment(ordersData.week.startDate, 'YYYY-MM-DD')}),
+                office: new Office({
+                  company: new Company(ordersData.office.company),
+                  title: ordersData.office.title
+                }),
+                payments: Payment.createCollectionFrom(orderData.payments),
+                dishSet: orderData.dishSet
               });
-
-              return new Order(order);
             });
           }
         },
@@ -62,6 +62,7 @@
           fri: null,
         },
         _weekdays: ['mon', 'tue', 'wed', 'thu', 'fri'],
+        _payments: [],
 
         constructor: function(params) {
           params = params || {};
@@ -77,6 +78,7 @@
           this.setOffice(params.office);
 
           this._dishSet = params.dishSet || this._dishSet;
+          this.setPayments(params.payments);
         },
 
         isValidConstructorParams: function(params) {
@@ -157,6 +159,34 @@
           }
 
           return total;
+        },
+
+        totalPaid: function() {
+          return this._payments.reduce(function(sum, payment) {
+            return sum + payment.get('amount');
+          }, 0);
+        },
+
+        setPayments: function(payments) {
+          if (!(payments instanceof Array)) {
+            throw new Error('Order: payments should be an array');
+          }
+
+          this._payments = payments;
+
+          return this;
+        },
+
+        addPayment: function(payment) {
+          if (!payment || !payment.amount) {
+            throw new Error('Order: addPayment: must be valid payment');
+          }
+
+          this._payments.push(payment);
+        },
+
+        payments: function() {
+          return this._payments;
         }
       });
 
