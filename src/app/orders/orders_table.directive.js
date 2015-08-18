@@ -33,15 +33,24 @@
       };
 
       vm.checkIn = function(fullName, selectedDishSets) {
-        var order = new Order({
-          client: new Client(fullName),
-          week: vm.week,
-          office: vm.office,
-          dishSet: angular.copy(selectedDishSets),
-          payments: []
-        });
+        var dishSets = angular.copy(selectedDishSets);
 
-        vm.orders.push(order);
+        Client.findOrCreateByFullName(fullName)
+          .then(function(client) {
+
+            var order = new Order({
+              client: client,
+              week: vm.week,
+              office: vm.office,
+              dishSet: dishSets,
+              payments: []
+            });
+
+            vm.orders.push(order);
+          })
+          .catch(function() {
+            $log.error('OrdersTableController: Unable to find or create client with name "' + fullName + '"');
+          });
       };
 
       vm.checkOut = function(order, index) {

@@ -15,7 +15,7 @@
   <tr ng-repeat="order in vm.orders">
     <td class="number">{{ $index + 1 }}</td>
     <td class="client-name">
-      {{ order.client().fullName() }}
+      {{ order.client().get('fullName') }}
       <i class="remove-icon glyphicon glyphicon-remove-circle pull-right" ng-click="vm.checkOut(order, $index)"></i>
     </td>
     <td class="weekday">

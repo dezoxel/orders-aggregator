@@ -188,6 +188,7 @@
         payments: function() {
           return this._payments;
         }
+
       });
 
       return Order;
