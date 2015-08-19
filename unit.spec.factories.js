@@ -31,12 +31,14 @@ Factory.define('paymentTwo', Payment, {
 
 Factory.define('clientData', Client, {
   id: 56,
-  fullName: 'Vasya Pupkin'
+  fullName: 'Vasya Pupkin',
+  balance: -150
 });
 
 Factory.define('client', Client, {
   id: 56,
-  fullName: 'Vasya Pupkin'
+  fullName: 'Vasya Pupkin',
+  balance: -150
 });
 
 Factory.define('week', Week, {

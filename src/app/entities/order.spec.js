@@ -18,7 +18,7 @@ describe('Order', function () {
   beforeEach(function () {
 
     orderData = {
-      client: {fullName: 'Vasya Pupkin', },
+      client: {fullName: 'Vasya Pupkin', balance: -55},
       dishSet: {
         mon: 'big_no_salad',
         tue: 'big_no_meat',
@@ -30,7 +30,7 @@ describe('Order', function () {
     };
 
     anotherOrderData = {
-      client: {fullName: 'Ivan Ivanov'},
+      client: {fullName: 'Ivan Ivanov', balance: 45},
       dishSet: {
         mon: 'mid_no_salad',
         tue: 'mid_no_meat',
@@ -197,7 +197,7 @@ describe('Order', function () {
 
     context('given valid arguments', function() {
       beforeEach(function() {
-        this.order.setClient(new Client({fullName: 'Ivan Ivanov'}));
+        this.order.setClient(new Client({fullName: 'Ivan Ivanov', balance: 50}));
       });
 
       it('sets the new client instance', function() {

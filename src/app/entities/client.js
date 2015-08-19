@@ -7,7 +7,7 @@
 
       var Client = BaseModel.extend({
 
-        _attrs: ['id', 'fullName'],
+        _attrs: ['id', 'fullName', 'balance'],
 
         _validators: {
           fullName: {
@@ -21,6 +21,12 @@
             numericality: {
               onlyInteger: true,
               greaterThan: 0
+            }
+          },
+          balance: {
+            presence: true,
+            numericality: {
+              onlyInteger: true
             }
           }
         },
@@ -43,16 +49,6 @@
                 return $q.reject(msg);
               });
           },
-        },
-
-        constructor: function(params) {
-          if (typeof params === 'string') {
-            params = {fullName: params};
-          } else {
-            params = params || {};
-          }
-
-          this._super([params]);
         }
       });
 

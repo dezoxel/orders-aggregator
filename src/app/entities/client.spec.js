@@ -13,7 +13,10 @@ describe('Client', function () {
 
     context('given valid arguments', function() {
 
-      function behavesLikeValidClient() {
+      context('possible specify many arguments', function() {
+        beforeEach('create client', function() {
+          this.client = new Client({fullName: 'Vasya Pupkin', balance: 30});
+        });
 
         it('has full name', function() {
           expect(this.client.get('fullName')).to.equal('Vasya Pupkin');
@@ -22,22 +25,6 @@ describe('Client', function () {
         it('has empty id', function() {
           expect(this.client.get('id')).to.be.empty;
         });
-      }
-
-      context('possible specify only fullName', function() {
-        beforeEach('create client', function() {
-          this.client = new Client('Vasya Pupkin');
-        });
-
-        behavesLikeValidClient();
-      });
-
-      context('possible specify many arguments', function() {
-        beforeEach('create client', function() {
-          this.client = new Client({fullName: 'Vasya Pupkin', ignoredAttr: 30});
-        });
-
-        behavesLikeValidClient();
       });
     });
 
@@ -72,7 +59,7 @@ describe('Client', function () {
 
   describe('set fullName', function() {
     beforeEach('create client', function() {
-      this.client = new Client({fullName: 'Vasya Pupkin', id: 123});
+      this.client = new Client({fullName: 'Vasya Pupkin', id: 123, balance: 500});
     });
 
     context('given valid arguments', function() {
@@ -111,7 +98,7 @@ describe('Client', function () {
 
       context('when ID specified', function() {
         beforeEach('valid client', function() {
-          this.client = new Client({fullName: 'Vasya Pupkin', id: 123});
+          this.client = new Client({fullName: 'Vasya Pupkin', id: 123, balance: 200});
         });
 
         it('returns correct ID', function() {
@@ -121,7 +108,7 @@ describe('Client', function () {
 
       context('when ID is not specified', function() {
         beforeEach('client without id', function() {
-          this.client = new Client('Vasya Pupkin');
+          this.client = new Client({fullName: 'Vasya Pupkin', balance: -45});
         });
 
         it('returns empty ID', function() {
