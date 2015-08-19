@@ -21,8 +21,7 @@
           orders.push({
             id: generateId(),
             client: clientsData.generateAny(),
-            dishSet: generateDishSet(),
-            payments: generatePayments()
+            dishSet: generateDishSet()
           });
         }
 

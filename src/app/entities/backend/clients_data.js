@@ -61,7 +61,7 @@
           return {
             id: randomInteger(1, 999),
             fullName: fullName,
-            balance: randomInteger(0, balances.length - 1)
+            balance: 0
           };
         },
 
@@ -69,7 +69,7 @@
           return {
             id: randomInteger(1, 999),
             fullName: names[randomInteger(0, names.length - 1)],
-            balance: balances[randomInteger(0, balances.length - 1)]
+            balance: 0
           };
         }
       };

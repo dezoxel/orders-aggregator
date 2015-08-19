@@ -43,7 +43,6 @@
                   company: new Company(ordersData.office.company),
                   title: ordersData.office.title
                 }),
-                payments: Payment.createCollectionFrom(orderData.payments),
                 dishSet: orderData.dishSet
               });
             });
@@ -78,7 +77,6 @@
           this.setOffice(params.office);
 
           this._dishSet = params.dishSet || this._dishSet;
-          this.setPayments(params.payments);
         },
 
         isValidConstructorParams: function(params) {
@@ -165,16 +163,6 @@
           return this._payments.reduce(function(sum, payment) {
             return sum + payment.get('amount');
           }, 0);
-        },
-
-        setPayments: function(payments) {
-          if (!(payments instanceof Array)) {
-            throw new Error('Order: payments should be an array');
-          }
-
-          this._payments = payments;
-
-          return this;
         },
 
         addPayment: function(payment) {
