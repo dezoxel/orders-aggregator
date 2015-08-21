@@ -6,18 +6,18 @@
     .service('CompanyGenerator', function(RandomGenerator) {
       var CompanyGenerator = this;
 
-      CompanyGenerator.titles = ['Google', 'Microsoft', 'Apple', 'Facebook'];
+      CompanyGenerator.names = ['Google', 'Microsoft', 'Apple', 'Facebook'];
 
-      CompanyGenerator.title = function() {
-        var min = 0, max = this.titles.length - 1;
+      CompanyGenerator.name = function() {
+        var min = 0, max = this.names.length - 1;
 
-        return this.titles[RandomGenerator.int(min, max)];
+        return this.names[RandomGenerator.int(min, max)];
       };
 
       CompanyGenerator.one = function() {
         return {
           id: 1,
-          title: CompanyGenerator.title(),
+          name: CompanyGenerator.title(),
         };
       };
     });
