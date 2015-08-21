@@ -3,7 +3,7 @@
 
   angular
     .module('sfba.orders')
-    .controller('OrdersController', function ($log, $q, Week, Office, moment, companyId) {
+    .controller('OrdersController', function ($log, $q, Week, Office, Time, moment, companyId) {
       var vm = this;
 
       vm.init = function() {
@@ -23,10 +23,13 @@
       vm.defineInitialState = function() {
         vm.offices = [];
 
-        // current week
+        // TODO: deprecated
         vm.week = new Week({
           startDate: moment().startOf('isoWeek'),
         });
+
+        // current week
+        vm.weekStartDate = Time.startOfWeek();
       };
 
       vm.init();
