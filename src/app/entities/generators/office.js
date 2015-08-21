@@ -18,7 +18,7 @@
         return {
           id: RandomGenerator.id(),
           title: this.title(),
-        }
+        };
       };
 
       OfficeGenerator.many = function(count) {
@@ -26,7 +26,7 @@
 
         var offices = [];
         for(var i = 0; i < count; i++) {
-          offices.push(this.one())
+          offices.push(this.one());
         }
 
         return offices;

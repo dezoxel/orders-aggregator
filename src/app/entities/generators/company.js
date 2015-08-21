@@ -16,9 +16,9 @@
 
       CompanyGenerator.one = function() {
         return {
-          id: RandomGenerator.id(),
+          id: 1,
           title: CompanyGenerator.title(),
-        }
+        };
       };
     });
 })(angular);
