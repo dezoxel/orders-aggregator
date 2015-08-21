@@ -12,7 +12,9 @@
     "angular": "~1.4.0",
     "Class-js": "~0.6.1",
     "angular-smart-table": "~2.1.2",
-    "validate": "~0.8.0"
+    "validate": "~0.8.0",
+    "underscore": "~1.8.3",
+    "underscore.string": "~3.1.1"
   },
   "devDependencies": {
     "angular-mocks": "~1.4.0",
