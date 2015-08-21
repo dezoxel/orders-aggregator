@@ -5,12 +5,36 @@
     .module('sfba.entities')
     .factory('ActiveRecordBase', function(Class, validate, $injector, _, s) {
 
+      function pluralAssociationToClassName(name) {
+        var capitalized = s(name).capitalize().value();
+        var singular = capitalized.substring(0, capitalized.length - 1);
+
+        return singular;
+      }
+
       var ActiveRecordBase = Class.create({
         abstractClass: true,
 
         inheritedStatics: {
 
           onClassCreated : function(NewClass) {
+            NewClass.identityMap = {
+              instances: {},
+              list: []
+            };
+
+            if (NewClass.prototype.hasMany) {
+              this.createHasManyAssociationMethods(NewClass);
+            }
+
+            if (NewClass.prototype.belongsTo) {
+              this.createBelongsToAssociationMethods(NewClass);
+            }
+
+            if (NewClass.prototype.hasOne) {
+              this.createHasOneAssociationMethods(NewClass);
+            }
+
             if (NewClass.prototype.attrs) {
               this.createAccessorsFor(NewClass);
             }
@@ -31,6 +55,99 @@
               };
             });
           },
+
+          createHasManyAssociationMethods: function(NewClass) {
+            var associationName = NewClass.prototype.hasMany;
+            var associationKey = NewClass.prototype.associationKey;
+            var DependentClassName = pluralAssociationToClassName(associationName);
+
+            var association = function() {
+              var DependentClass = $injector.get(DependentClassName);
+              var attrs = {};
+              attrs[associationKey] = this._attrs.id;
+              return DependentClass.where(attrs);
+            };
+
+            NewClass.prototype[associationName] = association;
+          },
+
+          createBelongsToAssociationMethods: function(NewClass) {
+            var associationName = NewClass.prototype.belongsTo;
+            var associationKey = associationName + 'Id';
+            var DependentClassName = s(associationName).capitalize().value();
+
+            var association = function() {
+              var DependentClass = $injector.get(DependentClassName);
+              return DependentClass.find(this._attrs[associationKey]);
+            };
+
+            NewClass.prototype[associationName] = association;
+          },
+
+          createHasOneAssociationMethods: function(NewClass) {
+            var associationName = NewClass.prototype.hasOne;
+            var associationKey = NewClass.prototype.associationKey;
+            var DependentClassName = s(associationName).capitalize().value();
+
+            var association = function() {
+              var DependentClass = $injector.get(DependentClassName);
+              return DependentClass.findBy({associationKey: this._attrs[associationKey]});
+            };
+
+            NewClass.prototype[associationName] = association;
+          },
+
+          addOne: function(data) {
+            var instance =  new this(data);
+
+            this.identityMap.instances[data.id] = instance;
+            this.identityMap.list.push(instance);
+
+            return this;
+          },
+
+          addMany: function(list) {
+            list.forEach(function(item) {
+              this.addOne(item);
+            }, this);
+
+            return this;
+          },
+
+          find: function(id) {
+            return this.identityMap.instances[id];
+          },
+
+          // TODO: Make support of working with multiple attr pairs
+          where: function(attrs) {
+            var field = Object.keys(attrs)[0];
+
+            return _.chain(this.identityMap.list).where(function(item) {
+              return item.get(field) === attrs[field];
+            }).value();
+          },
+
+          findBy: function(attrs) {
+            var field = Object.keys(attrs)[0];
+
+            return _.chain(this.identityMap.list).find(function(item) {
+              return item.get(field) === attrs[field];
+            }).value();
+          },
+
+          all: function() {
+            return this.identityMap.list;
+          },
+
+          first: function() {
+            return this.identityMap.list[0];
+          },
+
+          last: function() {
+            var lastIndex = this.identityMap.list.length - 1;
+
+            return this.identityMap.list[lastIndex];
+          }
         },
 
         constructor: function(params) {
@@ -46,6 +163,12 @@
 
           if (errors) {
             throw new Error('ActiveRecordBase: set: No such attribute "' + name + '"');
+          }
+
+          errors = validate.single(value, this._validates[name]);
+
+          if (errors) {
+            throw new Error('ActiveRecordBase: set "' + name + '": ' + errors.join(';'));
           }
 
           this._attrs[name] = value;
