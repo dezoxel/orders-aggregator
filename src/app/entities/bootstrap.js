@@ -12,7 +12,7 @@
             var companyId = params.companyId;
             var weekStartDate = params.weekStartDate;
 
-            var url = '/company/' + companyId + '/offices/all/week/' + weekStartDate.format('YYYY-MM-DD') + '/orders';
+            var url = '/company/' + companyId + '/offices/all/weekStartDate/' + weekStartDate + '/orders';
             return backend.get(url)
               .catch(function() {
                 $log.error('Bootstrap: An error occured when fetching bootstrap info');

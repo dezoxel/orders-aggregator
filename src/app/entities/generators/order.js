@@ -48,7 +48,7 @@
         var office = OfficeGenerator.oneFor(company);
         return {
           office: office,
-          week: {startDate: RandomGenerator.weekStartDate()},
+          weekStartDate: RandomGenerator.weekStartDate(),
           list: this.many()
         };
       };

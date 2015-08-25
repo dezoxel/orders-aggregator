@@ -3,7 +3,7 @@
 
   angular
     .module('sfba.entities')
-    .factory('Order', function ($log, Class, Client, Week, Office, Company, Payment, dishSets, backend, moment) {
+    .factory('Order', function ($log, Class, Client, Office, Company, Payment, dishSets, backend, moment) {
 
       var Order = Class.create({
 
@@ -15,7 +15,7 @@
 
             var ordersUrl =
               '/office/' + office.id() +
-              '/week/' + weekStartDate.format('YYYY-MM-DD') +
+              '/weekStartDate/' + weekStartDate +
               '/orders';
 
             return backend.get(ordersUrl)
@@ -29,7 +29,7 @@
 
           createCollectionFrom: function(ordersData) {
 
-            if (!ordersData || !ordersData.office || !ordersData.week || !(ordersData.list instanceof Array)) {
+            if (!ordersData || !ordersData.office || !ordersData.weekStartDate || !(ordersData.list instanceof Array)) {
               throw new Error('Order: invalid orders data format specified');
             }
 
@@ -38,7 +38,7 @@
               return new Order({
                 id: orderData.id,
                 client: new Client(orderData.client),
-                week: new Week({startDate: moment(ordersData.week.startDate, 'YYYY-MM-DD')}),
+                weekStartDate: ordersData.weekStartDate,
                 office: new Office({
                   company: new Company(ordersData.office.company),
                   title: ordersData.office.title
@@ -51,7 +51,7 @@
 
         _id: null,
         _client: null,
-        _week: null,
+        _weekStartDate: null,
         _office: null,
         _dishSet: {
           mon: null,
@@ -73,14 +73,14 @@
           this._id = params.id;
 
           this.setClient(params.client);
-          this.setWeek(params.week);
+          this.setWeekStartDate(params.weekStartDate);
           this.setOffice(params.office);
 
           this._dishSet = params.dishSet || this._dishSet;
         },
 
         isValidConstructorParams: function(params) {
-          return params.client && params.week && params.office;
+          return params.client && params.weekStartDate && params.office;
         },
 
         dishsetFor: function(weekday) {
@@ -123,19 +123,19 @@
           return this._id;
         },
 
-        week: function() {
-          return this._week;
+        weekStartDate: function() {
+          return this._weekStartDate;
         },
 
         office: function() {
           return this._office;
         },
 
-        setWeek: function(week) {
-          if (week) {
-            this._week = week;
+        setWeekStartDate: function(weekStartDate) {
+          if (weekStartDate) {
+            this._weekStartDate = weekStartDate;
           } else {
-            throw new Error('Order: invalid argument for setWeek');
+            throw new Error('Order: invalid argument for setWeekStartDate');
           }
         },
 

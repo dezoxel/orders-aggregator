@@ -40,7 +40,7 @@
 
             var order = new Order({
               client: client,
-              week: vm.weekStartDate,
+              weekStartDate: vm.weekStartDate,
               office: vm.office,
               dishSet: dishSets,
               payments: []
