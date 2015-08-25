@@ -170,6 +170,13 @@
               })
               .catch(function() {
                 return backend.create(restUrl, attrs);
+              })
+              .then(function(entity) {
+                return new Entity(entity);
+              })
+              .catch(function(msg) {
+                $log.error(msg);
+                return $q.reject(msg);
               });
           }
         },

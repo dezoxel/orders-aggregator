@@ -14,9 +14,6 @@
                 resolve(BootstrapGenerator.everything());
               } else if (url.indexOf('/office') !== -1) {
                 resolve(OrderGenerator.listWithOfficeAndWeek());
-              } else if (url.indexOf('/clients/findOrCreate/fullName/') !== -1) {
-                var fullName = url.replace('/clients/findOrCreate/fullName/', '');
-                resolve(ClientGenerator.one(fullName));
               } else {
                 throw new Error('backend: Incorrect URL: "' + url + '"');
               }

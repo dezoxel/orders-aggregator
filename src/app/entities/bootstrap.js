@@ -3,7 +3,7 @@
 
   angular
     .module('sfba.entities')
-    .factory('Bootstrap', function(Class, backend, $log, Company, Office) {
+    .factory('Bootstrap', function(Class, backend, $log, Company, Office, Client) {
 
       var Bootstrap = Class.create({
 
@@ -22,6 +22,7 @@
           initWith: function(data) {
             Company.addOne(data.company);
             Office.addMany(data.offices);
+            Client.addMany(data.clients);
           }
         }
       });

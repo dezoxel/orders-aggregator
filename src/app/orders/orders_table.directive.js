@@ -35,7 +35,7 @@
       vm.checkIn = function(name, selectedDishSets) {
         var dishSets = angular.copy(selectedDishSets);
 
-        Client.findOrCreateByFullName(name)
+        Client.findOrCreateBy({name: name})
           .then(function(client) {
 
             var order = new Order({
