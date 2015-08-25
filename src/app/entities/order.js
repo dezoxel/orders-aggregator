@@ -3,7 +3,7 @@
 
   angular
     .module('sfba.entities')
-    .factory('Order', function ($log, Class, Client, Office, Company, Payment, dishSets, backend, moment) {
+    .factory('Order', function ($log, Class, Client, Office, Company, dishSets, backend, moment) {
 
       var Order = Class.create({
 
@@ -61,7 +61,6 @@
           fri: null,
         },
         _weekdays: ['mon', 'tue', 'wed', 'thu', 'fri'],
-        _payments: [],
 
         constructor: function(params) {
           params = params || {};
@@ -160,21 +159,7 @@
         },
 
         totalPaid: function() {
-          return this._payments.reduce(function(sum, payment) {
-            return sum + payment.get('amount');
-          }, 0);
-        },
-
-        addPayment: function(payment) {
-          if (!payment || !payment.amount) {
-            throw new Error('Order: addPayment: must be valid payment');
-          }
-
-          this._payments.push(payment);
-        },
-
-        payments: function() {
-          return this._payments;
+          return this._client.account().totalPaidFor(this._weekStartDate);
         }
 
       });

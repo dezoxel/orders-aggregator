@@ -7,7 +7,11 @@
 
       var Account = ActiveRecordBase.extend({
         belongsTo: 'client',
-        hasMany: 'transactions'
+        hasMany: 'transactions',
+
+        totalPaidFor: function() {
+          return 0;
+        }
       });
 
       return Account;
