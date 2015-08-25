@@ -8,7 +8,8 @@
       var Company = ActiveRecordBase.extend({
         attrs: ['id', 'name'],
         hasMany: 'offices',
-        associationKey: 'companyId'
+        associationKey: 'companyId',
+        persistence: '/companies'
       });
 
       return Company;

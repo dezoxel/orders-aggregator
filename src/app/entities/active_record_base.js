@@ -3,10 +3,14 @@
 
   angular
     .module('sfba.entities')
-    .factory('ActiveRecordBase', function(Class, validate, $injector, _, s) {
+    .factory('ActiveRecordBase', function(Class, backend, validate, $injector, _, s) {
 
       function pluralAssociationToClassName(name) {
         var capitalized = s(name).capitalize().value();
+        if (s(capitalized).endsWith('ies')) {
+          capitalized = capitalized.replace('ies', 'ys');
+        }
+
         var singular = capitalized.substring(0, capitalized.length - 1);
 
         return singular;
@@ -127,6 +131,7 @@
             }).value();
           },
 
+          // TODO: Make support of working with multiple attr pairs
           findBy: function(attrs) {
             var field = Object.keys(attrs)[0];
 
@@ -147,6 +152,25 @@
             var lastIndex = this.identityMap.list.length - 1;
 
             return this.identityMap.list[lastIndex];
+          },
+
+          findOrCreateBy: function(attrs) {
+            var entity = this.findBy(attrs);
+
+            if(entity) {
+              return $q.resolve(entity);
+            }
+
+            var Entity = this;
+
+            var restUrl = Entity.prototype.persistence;
+            return backend.findBy(restUrl, attrs)
+              .then(function(entity) {
+                return new Entity(entity);
+              })
+              .catch(function() {
+                return backend.create(restUrl, attrs);
+              });
           }
         },
 
@@ -184,7 +208,27 @@
           }
 
           return this._attrs[name];
+        },
+
+        save: function() {
+          var promise = this.isNew() ? backend.create(restUrl, this._attrs) : backend.save(restUrl, this._attrs);
+
+          return promise
+            .then(function(entity) {
+              return new NewClass(entity);
+            })
+            .catch(function() {
+              var msg = 'ActiveRecordBase: Unable to save entity';
+              $log.error(msg);
+
+              return $q.reject(msg);
+            });
+        },
+
+        isNew: function() {
+          return Boolean(this._attrs.id);
         }
+
       });
 
       return ActiveRecordBase;

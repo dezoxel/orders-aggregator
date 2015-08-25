@@ -7,7 +7,8 @@
 
       var Office = ActiveRecordBase.extend({
         attrs: ['id', 'name'],
-        belongsTo: 'company'
+        belongsTo: 'company',
+        persistence: '/offices'
       });
 
       return Office;
