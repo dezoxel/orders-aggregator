@@ -6,37 +6,33 @@
     .service('OfficeGenerator', function(RandomGenerator, CompanyGenerator) {
       var OfficeGenerator = this;
 
-      OfficeGenerator.titles = ['Office 1', 'Office 2', 'Office 3'];
+      OfficeGenerator.names = ['Office 1', 'Office 2', 'Office 3', 'Office 4'];
 
-      OfficeGenerator.title = function() {
-        var min = 0, max = this.titles.length - 1;
+      OfficeGenerator.name = function() {
+        var min = 0, max = this.names.length - 1;
 
-        return this.titles[RandomGenerator.int(min, max)];
+        return this.names[RandomGenerator.int(min, max)];
       };
 
-      OfficeGenerator.one = function() {
+      OfficeGenerator.oneFor = function(company) {
         return {
           id: RandomGenerator.id(),
-          title: this.title(),
+          name: this.name(),
+          companyId: company.id
         };
       };
 
-      OfficeGenerator.many = function(count) {
-        count = count || 2;
+      OfficeGenerator.manyFor = function(company) {
+        // 2 offices by default
+        var count = 2;
 
         var offices = [];
         for(var i = 0; i < count; i++) {
-          offices.push(this.one());
+          offices.push(this.oneFor(company));
         }
 
         return offices;
       };
 
-      OfficeGenerator.listWithCompany = function() {
-        return {
-          company: CompanyGenerator.one(),
-          list: OfficeGenerator.many(2)
-        }
-      };
     });
 })(angular);

@@ -44,10 +44,10 @@
 
       OrderGenerator.listWithOfficeAndWeek = function() {
         // TODO: Avoid adding company to the office
-        var hackedOffice = OfficeGenerator.one();
-        hackedOffice.company = CompanyGenerator.one();
+        var company = CompanyGenerator.one();
+        var office = OfficeGenerator.oneFor(company);
         return {
-          office: hackedOffice,
+          office: office,
           week: {startDate: RandomGenerator.weekStartDate()},
           list: this.many()
         };

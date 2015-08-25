@@ -14,13 +14,13 @@
 
       vm.defineInitialState = function() {
         vm.office = $scope.office;
-        vm.week = $scope.week;
+        vm.weekStartDate = $scope.weekStartDate;
         vm.orders = [];
         vm.ordersDisplayedCopy = [];
       };
 
       vm.fetchOrders = function() {
-        return Order.findWhere(vm.office, vm.week)
+        return Order.findWhere(vm.office, vm.weekStartDate)
           .then(function(orders) {
             vm.orders = orders;
           })
@@ -32,15 +32,15 @@
           });
       };
 
-      vm.checkIn = function(fullName, selectedDishSets) {
+      vm.checkIn = function(name, selectedDishSets) {
         var dishSets = angular.copy(selectedDishSets);
 
-        Client.findOrCreateByFullName(fullName)
+        Client.findOrCreateByFullName(name)
           .then(function(client) {
 
             var order = new Order({
               client: client,
-              week: vm.week,
+              week: vm.weekStartDate,
               office: vm.office,
               dishSet: dishSets,
               payments: []
@@ -49,7 +49,7 @@
             vm.orders.push(order);
           })
           .catch(function() {
-            $log.error('OrdersTableController: Unable to find or create client with name "' + fullName + '"');
+            $log.error('OrdersTableController: Unable to find or create client with name "' + name + '"');
           });
       };
 
@@ -68,7 +68,7 @@
         restrict: 'E',
         scope: {
           office: '=for',
-          week: '='
+          weekStartDate: '='
         },
         controller: 'OrdersTableController as vm',
         templateUrl: 'app/orders/orders_table.html'

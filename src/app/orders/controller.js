@@ -3,18 +3,21 @@
 
   angular
     .module('sfba.orders')
-    .controller('OrdersController', function ($log, $q, Week, Office, Time, moment, companyId) {
+    .controller('OrdersController', function ($log, $q, Bootstrap, Time, Company, companyId) {
       var vm = this;
 
       vm.init = function() {
         vm.defineInitialState();
 
-        return Office.findByCompany(companyId)
-          .then(function(offices) {
-            vm.offices = offices;
+        return Bootstrap.where({companyId: companyId, weekStartDate: vm.weekStartDate})
+          .then(function(data) {
+            Bootstrap.initWith(data);
+
+            vm.offices = Company.find(companyId).offices();
           })
           .catch(function() {
-            $log.error('OrdersController: An error occurred when fetching offices');
+            var msg = 'OrdersController: An error occurred when fetching orders';
+            $log.error(msg);
 
             return $q.reject();
           });
@@ -22,11 +25,6 @@
 
       vm.defineInitialState = function() {
         vm.offices = [];
-
-        // TODO: deprecated
-        vm.week = new Week({
-          startDate: moment().startOf('isoWeek'),
-        });
 
         // current week
         vm.weekStartDate = Time.startOfWeek();

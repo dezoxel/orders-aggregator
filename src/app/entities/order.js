@@ -8,14 +8,14 @@
       var Order = Class.create({
 
         statics: {
-          findWhere: function(office, week) {
-            if (!office || !week || !(office instanceof Office) || !(week instanceof Week)) {
+          findWhere: function(office, weekStartDate) {
+            if (!office || !weekStartDate || !(office instanceof Office)) {
               throw new Error('Order: invalid arguments for findWhere');
             }
 
             var ordersUrl =
               '/office/' + office.id() +
-              '/week/' + week.startDate().format('YYYY-MM-DD') +
+              '/week/' + weekStartDate.format('YYYY-MM-DD') +
               '/orders';
 
             return backend.get(ordersUrl)
@@ -132,7 +132,7 @@
         },
 
         setWeek: function(week) {
-          if (week && week instanceof Week) {
+          if (week) {
             this._week = week;
           } else {
             throw new Error('Order: invalid argument for setWeek');

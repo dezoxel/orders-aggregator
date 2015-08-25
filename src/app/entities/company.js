@@ -6,7 +6,9 @@
     .factory('Company', function (ActiveRecordBase) {
 
       var Company = ActiveRecordBase.extend({
-        attrs: ['id', 'name']
+        attrs: ['id', 'name'],
+        hasMany: 'offices',
+        associationKey: 'companyId'
       });
 
       return Company;

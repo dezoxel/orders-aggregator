@@ -3,14 +3,15 @@
 
   angular
     .module('sfba.entities')
-    .factory('backend', function($q, OfficeGenerator, OrderGenerator, ClientGenerator) {
+    .factory('backend', function($q, BootstrapGenerator, OrderGenerator, ClientGenerator) {
       return {
         get: function(url) {
+          console.log(url);
           return $q(function(resolve, reject) {
             // like a reminder that we have to implement error case
             if (true) {
               if (url.indexOf('/company') !== -1) {
-                resolve(OfficeGenerator.listWithCompany());
+                resolve(BootstrapGenerator.everything());
               } else if (url.indexOf('/office') !== -1) {
                 resolve(OrderGenerator.listWithOfficeAndWeek());
               } else if (url.indexOf('/clients/findOrCreate/fullName/') !== -1) {

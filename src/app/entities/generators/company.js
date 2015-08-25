@@ -17,7 +17,7 @@
       CompanyGenerator.one = function() {
         return {
           id: 1,
-          name: CompanyGenerator.title(),
+          name: CompanyGenerator.name(),
         };
       };
     });
