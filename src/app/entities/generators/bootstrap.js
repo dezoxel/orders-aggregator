@@ -3,7 +3,13 @@
 
   angular
     .module('sfba.entities')
-    .service('BootstrapGenerator', function(CompanyGenerator, OfficeGenerator, ClientGenerator) {
+    .service('BootstrapGenerator', function(
+      CompanyGenerator,
+      OfficeGenerator,
+      ClientGenerator,
+      RandomGenerator,
+      AccountGenerator
+    ) {
 
       var BootstrapGenerator = this;
 
@@ -15,7 +21,11 @@
         return {
           company: company,
           offices: offices,
-          clients: clients
+          weekStartDate: RandomGenerator.weekStartDate(),
+
+          clients: clients,
+          accounts: AccountGenerator.oneForEach(clients),
+          transactions: [],
         };
       };
 
