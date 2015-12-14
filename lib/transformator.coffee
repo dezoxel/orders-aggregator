@@ -2,7 +2,7 @@ class Transformator
 
   constructor: ->
     @person_col = '1'
-    @offices = ['Office 1', 'Office 2']
+    @floors = ['Floor 1', 'Floor 2', 'Floor 3']
 
     @result = {}
     @number_to_weekday =
@@ -24,7 +24,7 @@ class Transformator
 # {
 #   ПН: {
 #     count: 13,
-#     offices: {
+#     floors: {
 #       Office1: {
 #         count: 4,
 #         dish_types: {
@@ -43,14 +43,14 @@ class Transformator
 # }
 
   transform: (data) ->
-    office = ''
+    floor = ''
     for row_number, row of data
       person_name = @_fetch_person_name_from row
       continue if row_number < @start_records_row
       continue unless person_name
 
-      if person_name in @offices
-        office = person_name
+      if person_name in @floors
+        floor = person_name
         continue
 
       for day_number, one_day_record of row
@@ -60,38 +60,38 @@ class Transformator
         dish_type = @user_entry_to_dish_type one_day_record.value.trim()
 
         if dish_type
-          @_increase_count_for dish_type, weekday, office
-          @_record_person person_name, dish_type, weekday, office
+          @_increase_count_for dish_type, weekday, floor
+          @_record_person person_name, dish_type, weekday, floor
         else
           console.error 'Unrecognized user entry: >>>' + one_day_record.value + '<<<'
-          console.error 'Office: ' + office
+          console.error 'Floor: ' + floor
           console.error 'Weekday: ' + weekday
           console.error 'Person: ' + person_name
 
 
     @result
 
-  _increase_count_for: (dish_type, weekday, office) ->
-    @_init_result_data_structure(dish_type, weekday, office)
+  _increase_count_for: (dish_type, weekday, floor) ->
+    @_init_result_data_structure(dish_type, weekday, floor)
 
     @result[weekday].count++
-    @result[weekday].offices[office].count++
-    @result[weekday].offices[office].dish_types[dish_type].count++
+    @result[weekday].floors[floor].count++
+    @result[weekday].floors[floor].dish_types[dish_type].count++
 
-  _record_person: (name, dish_type, weekday, office) ->
-    @_init_result_data_structure(dish_type, weekday, office)
+  _record_person: (name, dish_type, weekday, floor) ->
+    @_init_result_data_structure(dish_type, weekday, floor)
 
-    @result[weekday].offices[office].dish_types[dish_type].people.push(name)
+    @result[weekday].floors[floor].dish_types[dish_type].people.push(name)
 
-  _init_result_data_structure: (dish_type, weekday, office) ->
+  _init_result_data_structure: (dish_type, weekday, floor) ->
     unless @result[weekday]
-      @result[weekday] = count: 0, offices: {}
+      @result[weekday] = count: 0, floors: {}
 
-    unless @result[weekday].offices[office]
-      @result[weekday].offices[office] = count: 0, dish_types: {}
+    unless @result[weekday].floors[floor]
+      @result[weekday].floors[floor] = count: 0, dish_types: {}
 
-    unless @result[weekday].offices[office].dish_types[dish_type]
-      @result[weekday].offices[office].dish_types[dish_type] = count: 0, people: []
+    unless @result[weekday].floors[floor].dish_types[dish_type]
+      @result[weekday].floors[floor].dish_types[dish_type] = count: 0, people: []
 
   user_entry_to_dish_type: (raw_user_entry) ->
     user_entry = raw_user_entry.toLowerCase()
