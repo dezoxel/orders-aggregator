@@ -2,9 +2,9 @@ GoogleSpreadsheets = require 'google-spreadsheets'
 Promise = require 'bluebird'
 
 class Importer
-  constructor: (auth_client, worksheet) ->
+  constructor: (auth_client, worksheet, spreadsheetId) ->
     @auth_client = auth_client
-    @spreadsheetId = '1SLqbhmzZn_6s8A2IccAF6jN5CGr0cQo0S1RRVaF1fnY'
+    @spreadsheetId = spreadsheetId
     @range = 'R9C1:R500C6'
     @worksheet = worksheet
 
@@ -17,6 +17,7 @@ class Importer
 
         console.log 'Importer: fetching data...'
         console.log 'Importer:   range:', @range
+        console.log 'Importer:   spreadsheet:', @spreadsheetId
         console.log 'Importer:   worksheet:', @worksheet
 
         GoogleSpreadsheets.cells

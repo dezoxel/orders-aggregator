@@ -6,8 +6,8 @@ Saver = require './saver'
 
 config = require './config'
 
-importerForRegularMenu = new Importer auth_client, config.worksheetNumberForRegularMenu
-importerForDietMenu = new Importer auth_client, config.worksheetNumberForDietMenu
+importerForRegularMenu = new Importer auth_client, config.worksheetNumberForRegularMenu, config.spreadsheetIdForRegularMenu
+importerForDietMenu = new Importer auth_client, config.worksheetNumberForDietMenu, config.spreadsheetIdForDietMenu
 
 importerForRegularMenu.import()
   .then (data) ->
