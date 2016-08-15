@@ -40,22 +40,23 @@ class LunchesApiImporter
     diet_orders = []
 
     orders.forEach (order) =>
-      if @is_regular_order order, regular_menu_product_ids[order.shipmentDate]
+      if @is_regular order, regular_menu_product_ids
         regular_orders.push order
-      else
+      else if @is_diet order, diet_menu_product_ids
         diet_orders.push order
 
     console.log 'Importer: website orders: regular:', regular_orders.length
     console.log 'Importer: website orders:    diet:', diet_orders.length
     [regular_orders, diet_orders]
 
-  is_regular_order: (order, regular_menu_product_ids) ->
-    n = 0
-    order.items.forEach (line_item) =>
-      if regular_menu_product_ids.indexOf(line_item.product.id) != -1
-        n = n + 1
+  is_regular: (order, ids) ->
+    @is_every_order_item_in_menu(order.items, ids[order.shipmentDate] || [])
 
-    n == order.items.length;
+  is_diet: (order, ids) ->
+    @is_every_order_item_in_menu(order.items, ids[order.shipmentDate] || [])
+
+  is_every_order_item_in_menu: (items, ids) ->
+    items.every (line_item) -> ids.indexOf(line_item.product.id) != -1
 
   compose_product_ids_by_menu_type: (menus) ->
     regular_menu_product_ids = {}
