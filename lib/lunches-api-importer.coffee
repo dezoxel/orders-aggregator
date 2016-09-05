@@ -32,6 +32,7 @@ class LunchesApiImporter
 
       .catch (err) ->
         console.log err
+        Promise.resolve([[], []]);
 
   split_to_regular_and_diet: (orders, menus) ->
     [regular_menu_product_ids, diet_menu_product_ids] = @compose_product_ids_by_menu_type menus
