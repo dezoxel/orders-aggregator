@@ -2,10 +2,10 @@ GoogleSpreadsheets = require 'google-spreadsheets'
 Promise = require 'bluebird'
 
 class Importer
-  constructor: (auth_client, worksheet, spreadsheetId) ->
+  constructor: (auth_client, worksheet, spreadsheetId, range) ->
     @auth_client = auth_client
     @spreadsheetId = spreadsheetId
-    @range = 'R9C1:R500C6'
+    @range = range || 'R9C1:R500C6'
     @worksheet = worksheet
 
   import: ->

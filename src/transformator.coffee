@@ -1,4 +1,19 @@
 moment = require 'moment'
+_ = require 'lodash/fp'
+
+mapValues = _.mapValues
+mapKeys = _.mapKeys
+assign = _.assign
+
+fixDayNumbers = mapValues((cols, rowId) ->
+  newCols = {}
+  i = 1
+  for colId, col of cols
+    newCols[i] = assign {}, col, {col: i + ''}
+    i++
+
+  newCols
+)
 
 class Transformator
 
@@ -33,8 +48,8 @@ class Transformator
 #           full: {
 #             count: 5,
 #             people: [
-#               'Vanya',
-#               'Peria',
+#               'Vania',
+#               'Petia',
 #               'Dima'
 #             ]
 #           }
@@ -44,7 +59,8 @@ class Transformator
 #   }
 # }
 
-  transformSheetsData: (data) ->
+  transformSheetsData: (rawData) ->
+    data = fixDayNumbers(rawData)
     floor = ''
     for row_number, row of data
       person_name = @_fetch_person_name_from row
@@ -168,6 +184,20 @@ class Transformator
         'Средних без салата'
       when '0.5 без гарнира', '0,5 без гарнира', 'средняя без гарнира', 'meat+salad.medium'
         'Средних без гарнира'
+      when 'комплекс'
+        'Комплекс'
+      when 'суп+второе'
+        'Суп+Второе'
+      when 'суп+салат'
+        'Суп+Салат'
+      when 'второе+салат'
+        'Второе+Салат'
+      when 'только второе'
+        'Только второе'
+      when 'только суп'
+        'Только суп'
+      when 'только салат'
+        'Только салат'
       else
         false
 
