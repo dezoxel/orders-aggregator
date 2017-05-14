@@ -4,16 +4,10 @@ _ = require 'lodash/fp'
 mapValues = _.mapValues
 mapKeys = _.mapKeys
 assign = _.assign
-
-fixDayNumbers = mapValues((cols, rowId) ->
-  newCols = {}
-  i = 1
-  for colId, col of cols
-    newCols[i] = assign {}, col, {col: i + ''}
-    i++
-
-  newCols
-)
+keys = _.keys
+every = _.every
+toNumber = _.toNumber
+map = _.map
 
 class Transformator
 
@@ -36,6 +30,30 @@ class Transformator
       row[@person_col].value
     else
       ''
+
+  # some magic convertation of day numbers
+  # in vegan menu we have new format of cells that are splitted.
+  # in this case numbers are: [1, 2, 4, 6, 8, 10] instead of [1, 2, 3, 4, 5, 6]
+  # this function converts data structure to follow numbers 1..6
+  fixDayNumbers: mapValues((cols, rowId) ->
+    isSplittedCells = every((id) -> id == '1' || toNumber(id) % 2 == 0)(keys cols)
+    if isSplittedCells
+      weekday_id_normalize_map =
+        '1': '1'
+        '2': '2'
+        '4': '3'
+        '6': '4'
+        '8': '5'
+        '10': '6'
+      newCols = {}
+      for colId, col of cols
+        normalizedColId = weekday_id_normalize_map[colId]
+        newCols[normalizedColId] = assign {}, col, {col: normalizedColId}
+
+      newCols
+    else
+      cols
+  )
 
 # Return data format example:
 # {
@@ -60,7 +78,7 @@ class Transformator
 # }
 
   transformSheetsData: (rawData) ->
-    data = fixDayNumbers(rawData)
+    data = @fixDayNumbers(rawData)
     floor = ''
     for row_number, row of data
       person_name = @_fetch_person_name_from row
