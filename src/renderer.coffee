@@ -1,7 +1,7 @@
 Promise = require 'bluebird'
 fs = require 'fs'
 path = require 'path'
-_ = require 'underscore'
+_ = require 'lodash'
 
 class Renderer
 
