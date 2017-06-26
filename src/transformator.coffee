@@ -77,8 +77,8 @@ class Transformator
 #   }
 # }
 
-  transformSheetsData: (rawData) ->
-    data = @fixDayNumbers(rawData)
+  transformSheetsData: (rawData, isVegan) ->
+    data = if isVegan then @fixDayNumbers(rawData) else rawData
     floor = ''
     for row_number, row of data
       person_name = @_fetch_person_name_from row
@@ -99,8 +99,8 @@ class Transformator
 
     @result
 
-  transform: (sheetsData, orders) ->
-    @transformSheetsData sheetsData
+  transform: (sheetsData, orders, isVegan) ->
+    @transformSheetsData sheetsData, isVegan
     @transformDataFromLunchesApi orders
 
     @result

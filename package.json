@@ -4,11 +4,12 @@
   "description": "Automation of accounting for small food business",
   "main": "sfba.js",
   "scripts": {
-    "test": "gulp test"
+    "test": "gulp test",
+    "start": "./node_modules/coffeescript/bin/coffee ./src/main.coffee"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/dezoxel/sfba.git"
+    "url": "git://github.com/dezoxel/orders-aggregator.git"
   },
   "keywords": [
     "business",
@@ -24,6 +25,7 @@
   "homepage": "https://github.com/dezoxel/sfba",
   "dependencies": {
     "bluebird": "3.5.0",
+    "coffeescript": "1.12.6",
     "google-spreadsheets": "0.5.1",
     "googleapis": "19.0.0",
     "lodash": "4.17.4",

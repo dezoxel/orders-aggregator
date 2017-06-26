@@ -41,7 +41,7 @@ Promise.all [
 
     regularReportData = regularTransformator.transform sheetsRegularOrders, lunchesRegularOrders
     dietReportData = dietTransformator.transform sheetsDietOrders, lunchesDietOrders
-    veganReportData = veganTransformator.transform sheetsVeganOrders, lunchesVeganOrders
+    veganReportData = veganTransformator.transform sheetsVeganOrders, lunchesVeganOrders, true
 
     regularRenderer = new Renderer regularReportData
     dietRenderer = new Renderer dietReportData
